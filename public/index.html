@@ -3,22 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewpoint" content="width-device-width, initial-scale=1.0">
-        <style>
-            #canvas{
-                border: 1px solid black;
-                display: block;
-                margin: 0 auto;
-                background: white;
-            }
-        </style>
         <title>Document</title>
+        <style>
+			body { margin: 0; }
+		</style>
     </head>
     <body>
-        <canvas id="canvas" tabindex="0" width="640" height="480"></canvas>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
-        <script src="mocorgo.js"></script>
-        <script src="userInput.js"></script>
-        <script src="client.js"></script>
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+        <script src="js/client.js" type="module"></script>
     </body>
 </html>
