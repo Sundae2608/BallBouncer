@@ -1,3 +1,4 @@
+// An abstract player class, just for demo purpose
 class Player {
     constructor(playerId, x, y) {
         this.playerId = playerId
@@ -6,9 +7,9 @@ class Player {
     }
 }
 
+// Server code
 const express = require('express')
 const app = express()
-
 const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));
 
@@ -48,8 +49,13 @@ function connected(socket) {
     console.log("Client with id " + socket.id + " left");
     io.emit('updatePlayers', playerPositions);
   });
+  
+  socket.on('move', moveData => {
+    console.log("User with ID: x=" + moveData.x + " y=" + moveData.y);
+  });
 }
 
+// Server loop
 function serverLoop() {
   io.emit('updatePlayers', playerPositions);
 }
