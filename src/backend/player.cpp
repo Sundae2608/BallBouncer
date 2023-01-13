@@ -1,24 +1,33 @@
-#include "player.h"
+#include "backend/player.h"
+#include "utils/math_utils.h"
 
 #include <math.h>
 #include <random>
 
-namespace backend {
-    Player::Player(double x, double y) : x_(x), y_(y) {};
+#include "point.h"
 
-    void Player::UpdateState(double time_delta) {
-        x_ += time_delta * vx_;
-        y_ += time_delta * vy_;
+namespace backend {
+    namespace {
+        constexpr double kStandingDistance = 0.1;
     }
 
-    void Player::UpdateIntention() {
-        double angle = atan2(goal_y_ - y_, goal_x_ - x_);
-        double vx = speed_ * cos(angle);
-        double vy = speed_ * sin(angle);
+    Player::Player(double x, double y, SingleStats& single_stats) {
+        main_single_ = std::make_unique<Single>(x, y, single_stats);
+    }
+
+    void Player::UpdateIntention(double time_delta) {
+        main_single_->UpdateIntention(time_delta);
+    }
+
+    void Player::UpdateState(double time_delta) {
+        main_single_->UpdateState(time_delta);
     }
 
     void Player::ChangeGoalPosition(double x, double y) {
-        goal_x_ = x;
-        goal_y_ = y;
+        main_single_->ChangeGoalPosition(x, y);
+    }
+
+    const Point Player::GetPosition() const {
+        return main_single_->GetPosition();
     }
 }  // namespace backend

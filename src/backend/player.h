@@ -1,32 +1,29 @@
 #pragma once
 
+#include <memory>
+
+#include "backend/point.h"
+#include "backend/single/single.h"
+
 namespace backend {
     class Player {
         public:
-            Player(double x, double y);
+            Player(double x, double y, SingleStats& single_stats);
 
             // Update the state of the player
             void UpdateState(double time_delta);
 
             // Update the intention of the player
-            void UpdateIntention();
+            void UpdateIntention(double time_delta);
 
             // Update the goal of the player
             void ChangeGoalPosition(double x, double y);
+
+            // Get player position
+            const Point GetPosition() const;
+
         private:
-            // Stats
-            double speed_ = 5;
-
-            // Position
-            double x_;
-            double y_;
-
-            // Velocity
-            double vx_;
-            double vy_;
-
-            // Goal of the player
-            double goal_x_;
-            double goal_y_;
+            // Singles controlled by the player
+            std::unique_ptr<Single> main_single_;
     };
 }
