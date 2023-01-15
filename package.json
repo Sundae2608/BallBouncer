@@ -21,6 +21,8 @@
   "devDependencies": {
     "express": "^4.18.2",
     "parcel": "^2.8.2",
+    "protobufjs": "^7.1.2",
+    "protobufjs-cli": "^1.0.2",
     "socket.io": "^4.5.4"
   },
   "dependencies": {

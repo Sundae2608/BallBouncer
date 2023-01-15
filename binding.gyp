@@ -1,4 +1,14 @@
-{
+{ 
+  "actions": [
+    {
+      "action_name": 'generate_proto_file',
+      "inputs": [
+        '<(INTERMEDIATE_DIR)/src/proto/data.proto',
+      ],
+      "outputs": ["<(INTERMEDIATE_DIR)/"],
+      "action": ['protoc', '-I=<(INTERMEDIATE_DIR)/src/proto/', '<@(_inputs)', '--cpp_out=<@(_outputs)']
+    },
+  ],
   "targets": [
     {
       "target_name": "game_wrapper",

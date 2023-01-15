@@ -8,7 +8,7 @@
 namespace backend {
     class Player {
         public:
-            Player(double x, double y, SingleStats& single_stats);
+            Player(uint64_t single_id, double x, double y, SingleStats& single_stats);
 
             // Update the state of the player
             void UpdateState(double time_delta);

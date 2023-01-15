@@ -19,7 +19,7 @@ namespace backend {
         constexpr double kOutOfReachSpeedMultiplier = 1.4;
     }
 
-    Single::Single(double x, double y, const SingleStats& single_stats) : 
+    Single::Single(uint64_t id, double x, double y, const SingleStats& single_stats) : id_(id),
         x_(x), y_(y), single_state_(SingleState::STANDING), single_stats_(single_stats) {
         goal_x_ = x;
         goal_y_ = y;
@@ -106,5 +106,9 @@ namespace backend {
 
     const Point Single::GetPosition() const {
         return { x_, y_};
+    }
+
+    const uint64_t Single::GetId() const {
+        return id_;
     }
 }

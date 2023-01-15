@@ -34,6 +34,12 @@ namespace backend {
             // Get all singles
             std::vector<Single*> GetAllSingles();
         private:
+            // Get a unique ID for an object in the game.
+            uint64_t GetUniqueId();
+
+            // Curr ID. An ID counter that increments to make sure all single has a unique ID.
+            uint64_t curr_id_;
+
             // Lower and upper bound of the map
             double xl_;
             double xu_;

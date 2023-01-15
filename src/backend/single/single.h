@@ -7,7 +7,7 @@
 namespace backend {
     class Single {
         public:
-            Single(double x, double y, const SingleStats& single_stats_);
+            Single(uint64_t id, double x, double y, const SingleStats& single_stats_);
 
             // Update the intention of the single
             void UpdateIntention(double time_delta);
@@ -21,7 +21,13 @@ namespace backend {
             // Get the position of the single
             const Point GetPosition() const;
 
+            // Get ID of the single
+            const uint64_t GetId() const;
+
         private:
+            // Unique ID
+            uint64_t id_;
+
             // Switch to a different state
             void SwitchSingleState(SingleState state);
 

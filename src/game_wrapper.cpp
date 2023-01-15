@@ -18,7 +18,8 @@ Napi::Object GameWrapper::Init(Napi::Env env, Napi::Object exports) {
     InstanceMethod("Move", &GameWrapper::Move),
     InstanceMethod("Update", &GameWrapper::Update),
     InstanceMethod("GetPlayerPosition", &GameWrapper::GetPlayerPosition),
-    InstanceMethod("GetAllSingles", &GameWrapper::GetAllSingles),
+    InstanceMethod("GetAllSinglesPosition", &GameWrapper::GetAllSinglesPosition),
+    InstanceMethod("GetAllSinglesId", &GameWrapper::GetAllSinglesId),
   });
 
   constructor = Napi::Persistent(func);
@@ -132,36 +133,44 @@ Napi::Value GameWrapper::GetPlayerPosition(const Napi::CallbackInfo& info) {
     return point_array;
 }
 
-Napi::Value GameWrapper::GetAllSingles(const Napi::CallbackInfo& info) {
+Napi::Value GameWrapper::GetAllSinglesPosition(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     if (info.Length() != 0) {
-        Napi::TypeError::New(env, "Function argument GetAllSingles() should not have any argument").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "Function argument GetAllSinglesPosition() should not have any argument").ThrowAsJavaScriptException();
     }
     std::vector<backend::Single*> singles = game_instance_->GetAllSingles();
     Napi::Array singles_array = Napi::Array::New(info.Env(), singles.size());
     for (int i = 0; i < singles.size(); i++) {
         backend::Single* single = singles[i];
         
-        // Array containing information about each data
-        Napi::Array individual_array = Napi::Array::New(info.Env(), 2);
-
-        // Assign ID
-        Napi::BigInt64Array id_array = Napi::BigInt64Array::New(info.Env(), 1);
-        id_array[0] = (uint64_t) single;
-        individual_array[(uint32_t) 0] = id_array;
-
         // Assign possition values
         backend::Point point_value = single->GetPosition();
         Napi::Float64Array point_array = Napi::Float64Array::New(info.Env(), 2);
         point_array[0] = point_value.x;
         point_array[1] = point_value.y;
-        individual_array[1] = point_array;
 
         // Assign individual to return array
-        singles_array[i] = individual_array;
+        singles_array[i] = point_array;
     }
     return singles_array;
+}
+
+Napi::Value GameWrapper::GetAllSinglesId(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Function argument GetAllSingles() should not have any argument").ThrowAsJavaScriptException();
+    }
+    std::vector<backend::Single*> singles = game_instance_->GetAllSingles();
+    Napi::BigInt64Array ids_array = Napi::BigInt64Array::New(info.Env(), singles.size());
+    for (int i = 0; i < singles.size(); i++) {
+        backend::Single* single = singles[i];
+        
+        // Assign individual to return array
+        ids_array[i] = single->GetId();
+    }
+    return ids_array;
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {

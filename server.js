@@ -73,6 +73,8 @@ function serverLoop() {
   timeDelta = (currTime - lastTime) / 1000;
   gameInstance.Update(timeDelta);
   let data = {};
+
+  // Create data to send for each player
   let playerData = {};
   for (let playerId in players) {
     let pointArray = gameInstance.GetPlayerPosition(playerId);
@@ -80,8 +82,17 @@ function serverLoop() {
       playerPosition: { x: pointArray[0], y: pointArray[1] },
     };
   }
+
+  // Get the data for each position
+  let singlesData = {
+    singlesPosition: gameInstance.GetAllSinglesPosition(),
+    singlesId: gameInstance.GetAllSinglesId()
+  }
+
+  // Construct the overall data
   data = {
-    playerData: playerData
+    playerData: playerData,
+    singlesData: singlesData
   }
   io.emit('updatePlayers', data);
   lastTime = currTime;

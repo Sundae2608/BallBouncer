@@ -18,7 +18,7 @@ namespace backend {
         collision_hasher_(hashing_config.x_div, hashing_config.y_div) {
         
         for (int i = 0; i < game_config.num_available_singles; i++) {
-            auto single = std::make_unique<Single>(rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), game_config.single_stats);
+            auto single = std::make_unique<Single>(GetUniqueId(), rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), game_config.single_stats);
             available_singles_[single.get()] = std::move(single);
             collision_hasher_.AddObject(single.get());
         }
@@ -52,7 +52,7 @@ namespace backend {
 
     void Game::AddNewPlayer(std::string player_id) {
         if (player_map_.find(player_id) == player_map_.end()) {
-            player_map_[player_id] = std::make_unique<Player>(rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), universal_single_stats_);
+            player_map_[player_id] = std::make_unique<Player>(GetUniqueId(), rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), universal_single_stats_);
             collision_hasher_.AddObject(player_map_[player_id].get()->GetSingle());
         }
     }
@@ -81,5 +81,9 @@ namespace backend {
             it++;
         }
         return singles;
+    }
+
+    uint64_t Game::GetUniqueId() {
+        return ++curr_id_;
     }
 }
