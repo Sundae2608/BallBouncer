@@ -19,8 +19,8 @@ namespace backend {
         constexpr double kOutOfReachSpeedMultiplier = 1.4;
     }
 
-    Single::Single(uint32_t id, double x, double y, const SingleStats& single_stats) : id_(id),
-        x_(x), y_(y), single_state_(SingleState::STANDING), single_stats_(single_stats) {
+    Single::Single(uint32_t id, uint32_t faction_id, double x, double y, const SingleStats& single_stats) : 
+        id_(id), faction_id_(faction_id), x_(x), y_(y), single_state_(SingleState::STANDING), single_stats_(single_stats) {
         goal_x_ = x;
         goal_y_ = y;
         angle_ = 0;

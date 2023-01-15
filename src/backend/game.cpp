@@ -40,7 +40,6 @@ namespace backend {
     }
 
     void Game::Update(double time_delta) {
-
         // Update faction of each singles. If singles don't have a faction before, they will join the faction
         // that belongs to the player who gets close to them.
         auto it = player_map_.begin();
@@ -56,10 +55,11 @@ namespace backend {
                     single->SwitchFaction(player->GetFactionId());
                 }
             }
+            it++;
         }
         
         // Update intention of each player
-        auto it = player_map_.begin();
+        it = player_map_.begin();
         while (it != player_map_.end()) {
             it->second->UpdateIntention(time_delta);
             it++;
@@ -75,7 +75,7 @@ namespace backend {
 
     void Game::AddNewPlayer(std::string player_id) {
         if (player_map_.find(player_id) == player_map_.end()) {
-            player_map_[player_id] = std::make_unique<Player>(GetUniqueSingleId(), rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), universal_single_stats_);
+            player_map_[player_id] = std::make_unique<Player>(GetUniqueSingleId(), GetUniqueFactionId(), rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), universal_single_stats_);
             collision_hasher_.AddSingle(player_map_[player_id].get()->GetSingle());
         }
     }
