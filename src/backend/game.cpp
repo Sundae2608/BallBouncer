@@ -83,7 +83,7 @@ namespace backend {
         return singles;
     }
 
-    uint64_t Game::GetUniqueId() {
+    uint32_t Game::GetUniqueId() {
         return ++curr_id_;
     }
 }

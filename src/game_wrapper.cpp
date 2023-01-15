@@ -33,18 +33,30 @@ GameWrapper::GameWrapper(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Game
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  if (info.Length() != 0) {
-    Napi::TypeError::New(env, "No argument expected").ThrowAsJavaScriptException();
+  if (info.Length() != 6 ||
+      !info[0].IsNumber() || !info[1].IsNumber() || !info[2].IsNumber() || 
+      !info[3].IsNumber() || !info[4].IsNumber() || !info[5].IsNumber()) {
+    Napi::TypeError::New(env, 
+        "Construct should be initialized with the following argument "
+        "GameWrapper(double xl, double xu, double yl, double yu, "
+        "int32_t seed, int32_t num_singles)").ThrowAsJavaScriptException();
   }
 
   // Create the game config
+  double xl = info[0].As<Napi::Number>();
+  double xu = info[1].As<Napi::Number>();
+  double yl = info[2].As<Napi::Number>();
+  double yu = info[3].As<Napi::Number>();
+  int32_t seed = info[4].As<Napi::Number>();
+  int32_t num_singles = info[5].As<Napi::Number>();
+
   backend::GameConfig game_config = {
-    /*xl=*/ -1000,
-    /*xu=*/ 1000,
-    /*yl=*/ -1000,
-    /*yu=*/ 1000,
-    /*seed=*/ 42,
-    /*num_available_singles=*/ 1000,
+    /*xl=*/ xl,
+    /*xu=*/ xu,
+    /*yl=*/ yl,
+    /*yu=*/ yu,
+    /*seed=*/ seed,
+    /*num_available_singles=*/ num_singles,
     /*single_stats=*/ {
         /*speed=*/ 30.0,
         /*acceleration=*/ 150.0,
@@ -163,7 +175,7 @@ Napi::Value GameWrapper::GetAllSinglesId(const Napi::CallbackInfo& info) {
         Napi::TypeError::New(env, "Function argument GetAllSingles() should not have any argument").ThrowAsJavaScriptException();
     }
     std::vector<backend::Single*> singles = game_instance_->GetAllSingles();
-    Napi::BigInt64Array ids_array = Napi::BigInt64Array::New(info.Env(), singles.size());
+    Napi::Int32Array ids_array = Napi::Int32Array::New(info.Env(), singles.size());
     for (int i = 0; i < singles.size(); i++) {
         backend::Single* single = singles[i];
         

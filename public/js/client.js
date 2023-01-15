@@ -104,40 +104,69 @@ const stats = Stats()
 document.body.append(stats.domElement)
 
 // Client setup
-let localPositions = {};
 let selfID;
+
 let playerObjects = {};
+let singleObjects = {};
 
 socket.on('connect', () => {
     selfID = socket.id;
-    localPositions[selfID] = true;
     console.log("We have been connected.");
     socket.emit('newPlayer');
 });
 
 socket.on('updatePlayers', data => {
+    // Loop through all player objects
     let playersFound = {};
-    // Loop through all player objections
-    for (let id in data.playerData) {
-        playersFound[id] = true;
-        let pos = data.playerData[id].playerPosition;
-        if (!(id in playerObjects)) {
+    let playerData = data.playerData;
+    for (let playerId in playerData) {
+        playersFound[playerId] = true;
+        let pos = playerData[playerId].playerPosition;
+        if (!(playerId in playerObjects)) {
             const geometry = new THREE.SphereGeometry( 2, 40, 40 );
             const material = new THREE.MeshBasicMaterial( {color: 0xF56028} );
             const obj = new THREE.Mesh( geometry, material );
             scene.add(obj);
-            playerObjects[id] = obj;
+            playerObjects[playerId] = obj;
         }
-        let playerObject = playerObjects[id];
+        let playerObject = playerObjects[playerId];
         playerObject.position.x = pos.x;
         playerObject.position.y = pos.y;
         playerObject.position.z = 1;
     }
-    for (let id in localPositions){
-        if (!playersFound[id]) {
-            delete localPositions[id];
-            scene.remove(playerObjects[id]);
-            delete playerObjects[id];
+    for (let playerId in playerObjects){
+        if (!playersFound[playerId]) {
+            scene.remove(playerObjects[playerId]);
+            delete playerObjects[playerId];
+        }
+    }
+
+    // Loop through all single objects
+    let singlesFound = {};
+    let singlesData = data.singlesData;
+    let singlesPosition = singlesData.singlesPosition;
+    let singlesId = new Int32Array(singlesData.singlesId);
+    for (let i = 0; i < singlesId.length; i++) {
+        let singleId = singlesId[i];
+        let singlePosition = new Float64Array(singlesPosition[i]);
+        singlesFound[singleId] = true;
+
+        if (!(singleId in singleObjects)) {
+            const geometry = new THREE.SphereGeometry( 2, 40, 40 );
+            const material = new THREE.MeshBasicMaterial( {color: 0x696969} );
+            const obj = new THREE.Mesh( geometry, material );
+            scene.add(obj);
+            singleObjects[singleId] = obj;
+        }
+        let singleObject = singleObjects[singleId];
+        singleObject.position.x = singlePosition[0];
+        singleObject.position.y = singlePosition[1];
+        singleObject.position.z = 1;
+    }
+    for (let singleId in singleObjects){
+        if (!singlesFound[singleId]) {
+            scene.remove(playerObjects[singleId]);
+            delete singleObjects[singleId];
         }
     }
 })
@@ -147,8 +176,10 @@ function animate() {
     requestAnimationFrame( animate );
 
     // Update the camera positio
-    camera.position.x = playerObjects[selfID].position.x + CAMERA_OFFSET_X;
-    camera.position.y = playerObjects[selfID].position.y + CAMERA_OFFSET_Y;
+    if (selfID in playerObjects) {
+        camera.position.x = playerObjects[selfID].position.x + CAMERA_OFFSET_X;
+        camera.position.y = playerObjects[selfID].position.y + CAMERA_OFFSET_Y;
+    }
     stats.update();
     renderer.render( scene, camera );
 };
@@ -159,7 +190,6 @@ function onWindowResize() {
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 window.addEventListener('resize', onWindowResize);
