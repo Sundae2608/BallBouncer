@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../backend/point.h"
+
 namespace math_utils {
 
     // Compare if the two double number equals each other given the tolerance window epsilon
@@ -13,5 +15,6 @@ namespace math_utils {
 
     // Check whether the distance between (x1, y1) and (x2, y2) is shorter than input distance
     bool WithinDistance(double x1, double y1, double x2, double y2, double distance);
+    bool WithinDistance(const backend::Point p1, const backend::Point p2, double distance);
 
 }

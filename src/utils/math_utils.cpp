@@ -1,5 +1,6 @@
 #include <cmath>
 
+#include "../backend/point.h"
 #include "math_utils.h"
 
 namespace math_utils {
@@ -19,6 +20,12 @@ namespace math_utils {
     bool WithinDistance(double x1, double y1, double x2, double y2, double distance) {
         double x_delta = x2 - x1;
         double y_delta = y2 - y1;
+        return (x_delta * x_delta) + (y_delta * y_delta) < distance * distance;
+    }
+
+    bool WithinDistance(const backend::Point p1, const backend::Point p2, double distance) {
+        double x_delta = p2.x - p1.x;
+        double y_delta = p2.y - p1.y;
         return (x_delta * x_delta) + (y_delta * y_delta) < distance * distance;
     }
 

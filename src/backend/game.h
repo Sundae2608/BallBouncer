@@ -34,11 +34,17 @@ namespace backend {
             // Get all singles
             std::vector<Single*> GetAllSingles();
         private:
-            // Get a unique ID for an object in the game.
-            uint32_t GetUniqueId();
+            // Update the faction of singles
+            void UpdateFaction();
 
-            // Curr ID. An ID counter that increments to make sure all single has a unique ID.
-            uint32_t curr_id_;
+            // Get a unique ID for an object in the game.
+            uint32_t GetUniqueSingleId();
+            uint32_t GetUniqueFactionId();
+
+            // IDs that increment to create unique identifier for singles, factions, objects, etc
+            uint32_t curr_single_id_;
+            uint32_t curr_faction_id_;
+            uint32_t neutral_faction_id_;
 
             // Lower and upper bound of the map
             double xl_;

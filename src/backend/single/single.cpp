@@ -104,11 +104,19 @@ namespace backend {
         goal_y_ = y;
     }
 
+    void Single::SwitchFaction(uint32_t faction_id) {
+        faction_id_ = faction_id;
+    }
+
     const Point Single::GetPosition() const {
         return { x_, y_};
     }
 
     const uint32_t Single::GetId() const {
         return id_;
+    }
+
+    const uint32_t Single::GetFactionId() const {
+        return faction_id_;
     }
 }

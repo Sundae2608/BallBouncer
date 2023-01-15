@@ -8,7 +8,7 @@
 namespace backend {
     class Player {
         public:
-            Player(uint32_t single_id, double x, double y, SingleStats& single_stats);
+            Player(uint32_t single_id, uint32_t faction_id, double x, double y, SingleStats& single_stats);
 
             // Update the state of the player
             void UpdateState(double time_delta);
@@ -22,10 +22,16 @@ namespace backend {
             // Get player position
             const Point GetPosition() const;
 
+            // Get player faction
+            const uint32_t GetFactionId() const;
+
             // Get player
             Single* GetSingle();
 
         private:
+            // Faction represented by the player
+            uint32_t faction_id_;
+
             // Singles controlled by the player
             std::unique_ptr<Single> main_single_;
     };

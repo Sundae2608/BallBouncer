@@ -152,7 +152,7 @@ socket.on('updatePlayers', data => {
         singlesFound[singleId] = true;
 
         if (!(singleId in singleObjects)) {
-            const geometry = new THREE.SphereGeometry( 2, 40, 40 );
+            const geometry = new THREE.SphereGeometry( 1.58, 40, 40 );
             const material = new THREE.MeshBasicMaterial( {color: 0x696969} );
             const obj = new THREE.Mesh( geometry, material );
             scene.add(obj);

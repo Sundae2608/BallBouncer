@@ -7,7 +7,7 @@
 namespace backend {
     class Single {
         public:
-            Single(uint32_t id, double x, double y, const SingleStats& single_stats_);
+            Single(uint32_t id, uint32_t faction_id, double x, double y, const SingleStats& single_stats_);
 
             // Update the intention of the single
             void UpdateIntention(double time_delta);
@@ -18,15 +18,22 @@ namespace backend {
             // Set the goal position of the single
             void ChangeGoalPosition(double x, double y);
 
+            // Change the faction the single belongs to
+            void SwitchFaction(uint32_t faction_id);
+            
             // Get the position of the single
             const Point GetPosition() const;
 
             // Get ID of the single
             const uint32_t GetId() const;
 
+            // Get faction ID of the single
+            const uint32_t GetFactionId() const;
+
         private:
             // Unique ID
             uint32_t id_;
+            uint32_t faction_id_;
 
             // Switch to a different state
             void SwitchSingleState(SingleState state);
