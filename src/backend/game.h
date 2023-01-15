@@ -6,16 +6,17 @@
 #include <map>
 #include <unordered_map>
 
-#include "backend/game_config.h"
-#include "backend/player.h"
-#include "backend/rng.h"
-#include "backend/single/single_stats.h"
+#include "collision_hasher.h"
+#include "configs.h"
+#include "player.h"
+#include "rng.h"
+#include "single/single_stats.h"
 
 namespace backend {
     class Game {
         public:
             // Constructor and destructor
-            Game(const GameConfig& game_config);
+            Game(const GameConfig& game_config, const HashingConfig& hashing_config);
             ~Game();
 
             // Add a new player to the environment
@@ -29,12 +30,18 @@ namespace backend {
 
             // Get player
             std::optional<Player*> GetPlayer(std::string player_id);
+
+            // Get all singles
+            std::vector<Single*> GetAllSingles();
         private:
             // Lower and upper bound of the map
             double xl_;
             double xu_;
             double yl_;
             double yu_;
+
+            // Collision hasher
+            CollisionHasher collision_hasher_;
 
             // Map containing all the players
             std::unordered_map<std::string, std::unique_ptr<Player>> player_map_;

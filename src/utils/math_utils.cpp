@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "utils/math_utils.h"
+#include "math_utils.h"
 
 namespace math_utils {
 

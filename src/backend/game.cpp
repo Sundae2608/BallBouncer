@@ -3,22 +3,24 @@
 #include <memory>
 #include <random>
 
-#include "backend/game.h"
-#include "backend/game_config.h"
-#include "backend/single/single_stats.h"
+#include "configs.h"
+#include "game.h"
+#include "single/single_stats.h"
 
 namespace backend {
-    Game::Game(const GameConfig& game_config) : 
+    Game::Game(const GameConfig& game_config, const HashingConfig& hashing_config) : 
         xl_(game_config.xl), 
         xu_(game_config.xu), 
         yl_(game_config.yl), 
         yu_(game_config.yu), 
         rng_(game_config.seed),
-        universal_single_stats_(game_config.single_stats) {
+        universal_single_stats_(game_config.single_stats),
+        collision_hasher_(hashing_config.x_div, hashing_config.y_div) {
         
         for (int i = 0; i < game_config.num_available_singles; i++) {
-            auto single = std::make_unique<Single>(rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_));
+            auto single = std::make_unique<Single>(rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), game_config.single_stats);
             available_singles_[single.get()] = std::move(single);
+            collision_hasher_.AddObject(single.get());
         }
     };
 
@@ -51,11 +53,13 @@ namespace backend {
     void Game::AddNewPlayer(std::string player_id) {
         if (player_map_.find(player_id) == player_map_.end()) {
             player_map_[player_id] = std::make_unique<Player>(rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_), universal_single_stats_);
+            collision_hasher_.AddObject(player_map_[player_id].get()->GetSingle());
         }
     }
 
     void Game::RemovePlayer(std::string player_id) {
         if (auto it = player_map_.find(player_id); it != player_map_.end()) {
+            collision_hasher_.RemoveObject(it->second.get()->GetSingle());
             it->second.reset();
             player_map_.erase(it);
         }
@@ -67,5 +71,15 @@ namespace backend {
             return it->second.get();
         }
         return std::nullopt;
+    }
+
+    std::vector<Single*> Game::GetAllSingles() {
+        std::vector<Single*> singles;
+        auto it = available_singles_.begin();
+        while (it != available_singles_.end()) {
+            singles.push_back(it->first);
+            it++;
+        }
+        return singles;
     }
 }

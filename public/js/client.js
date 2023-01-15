@@ -106,20 +106,21 @@ document.body.append(stats.domElement)
 // Client setup
 let localPositions = {};
 let selfID;
-let playerObjects = {}
+let playerObjects = {};
 
 socket.on('connect', () => {
     selfID = socket.id;
     localPositions[selfID] = true;
     console.log("We have been connected.");
-    socket.emit('newPlayer')
+    socket.emit('newPlayer');
 });
 
-socket.on('updatePlayers', playerPositions => {
+socket.on('updatePlayers', data => {
     let playersFound = {};
-    for (let id in playerPositions){
+    // Loop through all player objections
+    for (let id in data.playerData) {
         playersFound[id] = true;
-        localPositions[id] = {x: playerPositions[id].x, y: playerPositions[id].y}
+        let pos = data.playerData[id].playerPosition;
         if (!(id in playerObjects)) {
             const geometry = new THREE.SphereGeometry( 2, 40, 40 );
             const material = new THREE.MeshBasicMaterial( {color: 0xF56028} );
@@ -128,8 +129,8 @@ socket.on('updatePlayers', playerPositions => {
             playerObjects[id] = obj;
         }
         let playerObject = playerObjects[id];
-        playerObject.position.x = playerPositions[id].x;
-        playerObject.position.y = playerPositions[id].y;
+        playerObject.position.x = pos.x;
+        playerObject.position.y = pos.y;
         playerObject.position.z = 1;
     }
     for (let id in localPositions){

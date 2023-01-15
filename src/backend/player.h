@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "backend/point.h"
-#include "backend/single/single.h"
+#include "point.h"
+#include "single/single.h"
 
 namespace backend {
     class Player {
@@ -21,6 +21,9 @@ namespace backend {
 
             // Get player position
             const Point GetPosition() const;
+
+            // Get player
+            Single* GetSingle();
 
         private:
             // Singles controlled by the player

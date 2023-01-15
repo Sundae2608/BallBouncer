@@ -1,10 +1,10 @@
 #include <napi.h>
 #include "backend/game.h"
 
-class ControllerWrapper : public Napi::ObjectWrap<ControllerWrapper> {
+class GameWrapper : public Napi::ObjectWrap<GameWrapper> {
     public:
         static Napi::Object Init(Napi::Env env, Napi::Object exports); // sInit function for setting the export key to JS
-        ControllerWrapper(const Napi::CallbackInfo& info); // Constructor to initialise
+        GameWrapper(const Napi::CallbackInfo& info); // Constructor to initialise
 
     private:
         static Napi::FunctionReference constructor; //reference to store the class definition that needs to be exported to JS
@@ -23,6 +23,9 @@ class ControllerWrapper : public Napi::ObjectWrap<ControllerWrapper> {
 
         // Wrap GetPlayerPosition function
         Napi::Value GetPlayerPosition(const Napi::CallbackInfo& info);
+        
+        // Get all single positions
+        Napi::Value GetAllSingles(const Napi::CallbackInfo& info);
 
         // Internally stored game instance
         std::unique_ptr<backend::Game> game_instance_;

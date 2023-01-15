@@ -1,22 +1,24 @@
 #include <iostream>
 #include <memory>
 
+#include "backend/configs.h"
 #include "backend/game.h"
 #include "backend/player.h"
-#include "backend/game_config.h"
+#include "backend/single/single.h"
 #include "game_wrapper.h"
 
-Napi::FunctionReference ControllerWrapper::constructor;
+Napi::FunctionReference GameWrapper::constructor;
 
-Napi::Object ControllerWrapper::Init(Napi::Env env, Napi::Object exports) {
+Napi::Object GameWrapper::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
   Napi::Function func = DefineClass(env, "GameWrapper", {
-    InstanceMethod("AddNewPlayer", &ControllerWrapper::AddNewPlayer),
-    InstanceMethod("RemovePlayer", &ControllerWrapper::RemovePlayer),
-    InstanceMethod("Move", &ControllerWrapper::Move),
-    InstanceMethod("Update", &ControllerWrapper::Update),
-    InstanceMethod("GetPlayerPosition", &ControllerWrapper::GetPlayerPosition),
+    InstanceMethod("AddNewPlayer", &GameWrapper::AddNewPlayer),
+    InstanceMethod("RemovePlayer", &GameWrapper::RemovePlayer),
+    InstanceMethod("Move", &GameWrapper::Move),
+    InstanceMethod("Update", &GameWrapper::Update),
+    InstanceMethod("GetPlayerPosition", &GameWrapper::GetPlayerPosition),
+    InstanceMethod("GetAllSingles", &GameWrapper::GetAllSingles),
   });
 
   constructor = Napi::Persistent(func);
@@ -26,7 +28,7 @@ Napi::Object ControllerWrapper::Init(Napi::Env env, Napi::Object exports) {
   return exports;
 }
 
-ControllerWrapper::ControllerWrapper(const Napi::CallbackInfo& info) : Napi::ObjectWrap<ControllerWrapper>(info)  {
+GameWrapper::GameWrapper(const Napi::CallbackInfo& info) : Napi::ObjectWrap<GameWrapper>(info)  {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
@@ -48,10 +50,14 @@ ControllerWrapper::ControllerWrapper(const Napi::CallbackInfo& info) : Napi::Obj
         /*rotation_speed=*/ 20
     }
   };
-  game_instance_ = std::make_unique<backend::Game>(game_config);
+  backend::HashingConfig hashing_config = {
+    /*x_div=*/ 50.0,
+    /*y_div=*/ 50.0
+  };
+  game_instance_ = std::make_unique<backend::Game>(game_config, hashing_config);
 }
 
-void ControllerWrapper::AddNewPlayer(const Napi::CallbackInfo& info) {
+void GameWrapper::AddNewPlayer(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
@@ -63,7 +69,7 @@ void ControllerWrapper::AddNewPlayer(const Napi::CallbackInfo& info) {
     return;
 }
 
-void ControllerWrapper::RemovePlayer(const Napi::CallbackInfo& info) {
+void GameWrapper::RemovePlayer(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
@@ -76,7 +82,7 @@ void ControllerWrapper::RemovePlayer(const Napi::CallbackInfo& info) {
     return;
 }
 
-void ControllerWrapper::Move(const Napi::CallbackInfo& info) {
+void GameWrapper::Move(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
@@ -89,13 +95,13 @@ void ControllerWrapper::Move(const Napi::CallbackInfo& info) {
 
     auto player_or = game_instance_->GetPlayer(player_id);
     if (!player_or.has_value()) {
-        Napi::TypeError::New(env, "Player Id not found").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "Player ID not found").ThrowAsJavaScriptException();
     }
         
     return player_or.value()->ChangeGoalPosition(x.DoubleValue(), y.DoubleValue());
 }
 
-void ControllerWrapper::Update(const Napi::CallbackInfo& info) {
+void GameWrapper::Update(const Napi::CallbackInfo& info) {
         Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
@@ -107,8 +113,8 @@ void ControllerWrapper::Update(const Napi::CallbackInfo& info) {
     return;
 }
 
-Napi::Value ControllerWrapper::GetPlayerPosition(const Napi::CallbackInfo& info) {
-        Napi::Env env = info.Env();
+Napi::Value GameWrapper::GetPlayerPosition(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     if (info.Length() != 1 || !info[0].IsString()) {
@@ -117,7 +123,7 @@ Napi::Value ControllerWrapper::GetPlayerPosition(const Napi::CallbackInfo& info)
     auto player_id = info[0].As<Napi::String>();
     auto player_or = game_instance_->GetPlayer(player_id);
     if (!player_or.has_value()) {
-        Napi::TypeError::New(env, "Function argument Move(string player_id, double x, double y) expected").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "Player ID not found").ThrowAsJavaScriptException();
     }
     Napi::Float64Array point_array = Napi::Float64Array::New(info.Env(), 2);
     backend::Point point_value = player_or.value()->GetPosition();
@@ -126,8 +132,40 @@ Napi::Value ControllerWrapper::GetPlayerPosition(const Napi::CallbackInfo& info)
     return point_array;
 }
 
+Napi::Value GameWrapper::GetAllSingles(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Function argument GetAllSingles() should not have any argument").ThrowAsJavaScriptException();
+    }
+    std::vector<backend::Single*> singles = game_instance_->GetAllSingles();
+    Napi::Array singles_array = Napi::Array::New(info.Env(), singles.size());
+    for (int i = 0; i < singles.size(); i++) {
+        backend::Single* single = singles[i];
+        
+        // Array containing information about each data
+        Napi::Array individual_array = Napi::Array::New(info.Env(), 2);
+
+        // Assign ID
+        Napi::BigInt64Array id_array = Napi::BigInt64Array::New(info.Env(), 1);
+        id_array[0] = (uint64_t) single;
+        individual_array[(uint32_t) 0] = id_array;
+
+        // Assign possition values
+        backend::Point point_value = single->GetPosition();
+        Napi::Float64Array point_array = Napi::Float64Array::New(info.Env(), 2);
+        point_array[0] = point_value.x;
+        point_array[1] = point_value.y;
+        individual_array[1] = point_array;
+
+        // Assign individual to return array
+        singles_array[i] = individual_array;
+    }
+    return singles_array;
+}
+
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
-    return ControllerWrapper::Init(env, exports);
+    return GameWrapper::Init(env, exports);
 }
 
 NODE_API_MODULE(NODE_GYP_MODULE_NAME, InitAll)

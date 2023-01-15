@@ -24,8 +24,7 @@ var gameInstance = new game_wrapper.GameWrapper();
 
 var playerCreations = [];
 var playerDestructions = [];
-var playerMoves = []
-var objectPositions = {};
+var playerMoves = [];
 
 var players = {};
 
@@ -61,6 +60,7 @@ function serverLoop() {
   playerCreations = [];
   for (let playerId of playerDestructions) {
     gameInstance.RemovePlayer(playerId);
+    delete players[playerId];
   }
   playerDestructions = [];
   for (let data of playerMoves) {
@@ -72,11 +72,18 @@ function serverLoop() {
   currTime = Date.now();
   timeDelta = (currTime - lastTime) / 1000;
   gameInstance.Update(timeDelta);
+  let data = {};
+  let playerData = {};
   for (let playerId in players) {
-    let point_array = gameInstance.GetPlayerPosition(playerId);
-    objectPositions[playerId] = { x: point_array[0], y: point_array[1]};
+    let pointArray = gameInstance.GetPlayerPosition(playerId);
+    playerData[playerId] = {
+      playerPosition: { x: pointArray[0], y: pointArray[1] },
+    };
   }
-  io.emit('updatePlayers', objectPositions);
+  data = {
+    playerData: playerData
+  }
+  io.emit('updatePlayers', data);
   lastTime = currTime;
 }
 setInterval(serverLoop, 1000/60);

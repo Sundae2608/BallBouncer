@@ -1,4 +1,4 @@
-#include "backend/rng.h"
+#include "rng.h"
 
 namespace backend {
     RNG::RNG(unsigned int seed) : rng_(seed), uniform_distr_(0.0, 1.0) {};

@@ -1,5 +1,6 @@
-#include "backend/player.h"
-#include "utils/math_utils.h"
+#include "player.h"
+#include "single/single.h"
+#include "../utils/math_utils.h"
 
 #include <math.h>
 #include <random>
@@ -25,6 +26,10 @@ namespace backend {
 
     void Player::ChangeGoalPosition(double x, double y) {
         main_single_->ChangeGoalPosition(x, y);
+    }
+
+    Single* Player::GetSingle() {
+        return main_single_.get();
     }
 
     const Point Player::GetPosition() const {

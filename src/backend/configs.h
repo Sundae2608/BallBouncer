@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "backend/single/single_stats.h"
+#include "single/single_stats.h"
 
 namespace backend {
     struct GameConfig {
@@ -20,5 +20,10 @@ namespace backend {
 
         // Universal single stats
         SingleStats single_stats;  
+    };
+
+    struct HashingConfig {
+        double x_div;
+        double y_div;
     };
 }

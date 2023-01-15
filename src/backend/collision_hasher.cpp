@@ -1,5 +1,7 @@
-#include "backend/point.h"
-#include "backend/collision_hasher.h"
+#include "point.h"
+#include "collision_hasher.h"
+
+#include <iostream>
 
 namespace backend {
     namespace {

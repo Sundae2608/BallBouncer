@@ -1,8 +1,8 @@
 #pragma once
 
-#include "backend/point.h"
-#include "backend/single/single_state.h"
-#include "backend/single/single_stats.h"
+#include "../point.h"
+#include "single_state.h"
+#include "single_stats.h"
 
 namespace backend {
     class Single {

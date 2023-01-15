@@ -1,7 +1,7 @@
 #include <cmath>
 #include <math.h>
 
-#include "utils/move_utils.h"
+#include "move_utils.h"
 
 
 namespace move_utils {

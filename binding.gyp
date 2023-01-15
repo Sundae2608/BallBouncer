@@ -6,6 +6,7 @@
       "cflags_cc!": [ "-fno-exceptions" ],
       "sources": [
         "./src/game_wrapper.cpp",
+        "./src/backend/collision_hasher.cpp",
         "./src/backend/game.cpp",
         "./src/backend/player.cpp",
         "./src/backend/rng.cpp",
