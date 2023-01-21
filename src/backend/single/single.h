@@ -16,13 +16,22 @@ namespace backend {
             void UpdateState(double time_delta);
 
             // Set the goal position of the single
-            void ChangeGoalPosition(double x, double y);
+            void SetGoalPosition(double x, double y);
 
             // Change the faction the single belongs to
             void SwitchFaction(uint32_t faction_id);
             
             // Get the position of the single
-            const Point GetPosition() const;
+            void SetGoalPosition(Vector2 p);
+            
+            // Get the position of the single
+            Vector2 GetPosition() const;
+            
+            // Get the position of the single
+            Vector2 GetVelocity() const;
+
+            // Set velocity
+            void SetVelocity(Vector2 v);
 
             // Get ID of the single
             const uint32_t GetId() const;
@@ -32,7 +41,7 @@ namespace backend {
 
         private:
             // Unique ID
-            uint32_t id_;
+            const uint32_t id_;
             uint32_t faction_id_;
 
             // Switch to a different state

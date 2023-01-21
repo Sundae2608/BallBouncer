@@ -1,25 +1,26 @@
 #include "point.h"
 #include "collision_hasher.h"
+#include "../utils/math_utils.h"
 
 #include <iostream>
+#include <utility>
 
 namespace backend {
-    namespace {
-        int64_t PairHash(int32_t x_hash, int32_t y_hash) {
-                return ((int64_t) x_hash << 32) | (y_hash & 0XFFFFFFFFL);
-        }
-    }
-
     CollisionHasher::CollisionHasher(double x_div, double y_div) :
-        x_div_(x_div), y_div_(y_div) {};
+        x_div_(x_div), y_div_(y_div) { };
 
     void CollisionHasher::RehashObjects() {
-        singles_map_.clear();
-        for (Single* single : singles_) {
-            Point point = single->GetPosition();
-            int32_t x_hash = point.x / x_div_;
-            int32_t y_hash = point.y / y_div_;
-            singles_map_[PairHash(x_hash, y_hash)].push_back(single);
+        // Clear all elements from previous hash
+        for (auto it = singles_map_.begin(); it != singles_map_.end(); it++) {
+            it->second.clear();
+        }
+
+        // Rehash all objects
+        for (auto it = singles_.begin(); it != singles_.end(); it++) {
+            Vector2 point = (*it)->GetPosition();
+            int x_hash = point.x / x_div_;
+            int y_hash = point.y / y_div_;
+            singles_map_[key(x_hash, y_hash)].push_back(*it);
         }
     }
 
@@ -31,21 +32,25 @@ namespace backend {
         singles_.erase(single);
     }
 
-    std::vector<Single*> CollisionHasher::GetNearbySingles(double x, double y, double radius) {
+    const std::vector<Single*> CollisionHasher::GetNearbySingles(double x, double y, double radius) const {
         // Convert x and y position to hash
-        int32_t x_hash = x / x_div_;
-        int32_t y_hash = y / y_div_;
+        int x_hash = x / x_div_;
+        int y_hash = y / y_div_;
 
         // Calculate look up range based on the radius
-        int32_t additional_range_x = radius / x_div_ + 1;
-        int32_t additional_range_y = radius / y_div_ + 1;
+        int additional_range_x = radius / x_div_ + 1;
+        int additional_range_y = radius / y_div_ + 1;
 
         // Return all singles given the range
         std::vector<Single*> return_vector;
         for (int i = x_hash - additional_range_x; i <= x_hash + additional_range_x; i++) {
             for (int j = y_hash - additional_range_y; j <= y_hash + additional_range_y; j++) {
-                int64_t hash_key = PairHash(x_hash, y_hash);
-                for (Single* single : singles_map_[hash_key]) {
+                if (singles_map_.find(key(i, j)) == singles_map_.end()) continue;
+                for (Single* single : singles_map_.at(key(i, j))) {
+                    // Add to return vector only if it is within distance.
+                    if (!math_utils::WithinDistance(single->GetPosition(), {x, y}, radius)) {
+                        continue;
+                    }
                     return_vector.push_back(single);
                 }
             }
@@ -53,7 +58,7 @@ namespace backend {
         return return_vector;
     }
 
-    std::vector<Single*> CollisionHasher::GetNearbySingles(const Point& point, double radius) {
+    const std::vector<Single*> CollisionHasher::GetNearbySingles(const Vector2 point, double radius) const {
         return GetNearbySingles(point.x, point.y, radius);
     }
 }

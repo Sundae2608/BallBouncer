@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <math.h>
 
 #include "move_utils.h"
@@ -18,8 +19,8 @@ namespace move_utils {
         else if (angle_diff < - kPi) angle_diff += k2Pi;
 
         if (abs(angle_diff) < rotation_amount) *angle = angle_goal;
-        else if (angle_diff < 0) *angle -= rotation_amount;
-        else *angle += rotation_amount;
+        else if (angle_diff < 0) *angle = *angle - rotation_amount;
+        else *angle = *angle + rotation_amount;
 
         if (*angle > kPi) *angle -= k2Pi;
         else if (*angle < - kPi) *angle += k2Pi;

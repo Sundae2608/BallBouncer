@@ -25,10 +25,14 @@ class GameWrapper : public Napi::ObjectWrap<GameWrapper> {
         Napi::Value GetPlayerPosition(const Napi::CallbackInfo& info);
         
         // Get all single positions
-        Napi::Value GetAllSinglesPosition(const Napi::CallbackInfo& info);
+        Napi::Value GetSinglePositionsAll(const Napi::CallbackInfo& info);
+        Napi::Value GetSinglePositionsByPlayer(const Napi::CallbackInfo& info);
+        Napi::Value GetSinglePositionsNeutral(const Napi::CallbackInfo& info);
         
-        // Get all single positions
-        Napi::Value GetAllSinglesId(const Napi::CallbackInfo& info);
+        // Get all Id
+        Napi::Value GetSingleIdsAll(const Napi::CallbackInfo& info);
+        Napi::Value GetSingleIdsByPlayer(const Napi::CallbackInfo& info);
+        Napi::Value GetSingleIdsNeutral(const Napi::CallbackInfo& info);
 
         // Internally stored game instance
         std::unique_ptr<backend::Game> game_instance_;

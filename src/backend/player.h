@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "point.h"
 #include "single/single.h"
@@ -17,22 +18,31 @@ namespace backend {
             void UpdateIntention(double time_delta);
 
             // Update the goal of the player
-            void ChangeGoalPosition(double x, double y);
+            void SetGoalPosition(double x, double y);
 
-            // Get player position
-            const Point GetPosition() const;
-
-            // Get player faction
-            const uint32_t GetFactionId() const;
+            // Absorb a single into a member of the team
+            void ObtainSingle(Single* single);
 
             // Get player
             Single* GetSingle();
+
+            // Get controlling singles
+            const std::vector<Single*> GetMemberSingles() const;
+
+            // Get player position
+            const Vector2 GetPosition() const;
+
+            // Get player faction
+            const uint32_t GetFactionId() const;
 
         private:
             // Faction represented by the player
             uint32_t faction_id_;
 
-            // Singles controlled by the player
+            // Main single controlled by the player
             std::unique_ptr<Single> main_single_;
+
+            // Other single controlled by the player
+            std::vector<Single*> member_singles_;
     };
 }

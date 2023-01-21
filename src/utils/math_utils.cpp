@@ -23,7 +23,7 @@ namespace math_utils {
         return (x_delta * x_delta) + (y_delta * y_delta) < distance * distance;
     }
 
-    bool WithinDistance(const backend::Point p1, const backend::Point p2, double distance) {
+    bool WithinDistance(const backend::Vector2 p1, const backend::Vector2 p2, double distance) {
         double x_delta = p2.x - p1.x;
         double y_delta = p2.y - p1.y;
         return (x_delta * x_delta) + (y_delta * y_delta) < distance * distance;

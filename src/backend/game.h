@@ -5,7 +5,9 @@
 #include <string>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 
+#include "boids_manager.h"
 #include "collision_hasher.h"
 #include "configs.h"
 #include "player.h"
@@ -33,6 +35,12 @@ namespace backend {
 
             // Get all singles
             std::vector<Single*> GetAllSingles();
+
+            // Get all neutral singles
+            std::vector<Single*> GetNeutralSingles();
+
+            // Get all singles belong to player
+            std::optional<std::vector<Single*>> GetPlayerSingles(std::string player_id);
         private:
             // Update the faction of singles
             void UpdateFaction();
@@ -55,11 +63,17 @@ namespace backend {
             // Collision hasher
             CollisionHasher collision_hasher_;
 
+            // Boids manager
+            BoidsManager boids_manager_;
+
             // Map containing all the players
             std::unordered_map<std::string, std::unique_ptr<Player>> player_map_;
 
             // Single object up for grab
             std::unordered_map<Single*, std::unique_ptr<Single>> available_singles_;
+
+            // Single object up for grab
+            std::unordered_set<Single*> neutral_singles_;
 
             // Random number generator
             RNG rng_;

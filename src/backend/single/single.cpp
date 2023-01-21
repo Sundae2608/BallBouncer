@@ -99,7 +99,12 @@ namespace backend {
         }
     }
 
-    void Single::ChangeGoalPosition(double x, double y) {
+    void Single::SetGoalPosition(Vector2 p) {
+        goal_x_ = p.x;
+        goal_y_ = p.y;
+    }
+
+    void Single::SetGoalPosition(double x, double y) {
         goal_x_ = x;
         goal_y_ = y;
     }
@@ -108,8 +113,17 @@ namespace backend {
         faction_id_ = faction_id;
     }
 
-    const Point Single::GetPosition() const {
+    Vector2 Single::GetPosition() const {
         return { x_, y_};
+    }
+
+    Vector2 Single::GetVelocity() const {
+        return { vx_, vy_};
+    }
+
+    void Single::SetVelocity(Vector2 v) {
+        vx_ = v.x;
+        vy_ = v.y;
     }
 
     const uint32_t Single::GetId() const {

@@ -16,6 +16,7 @@
       "cflags_cc!": [ "-fno-exceptions" ],
       "sources": [
         "./src/game_wrapper.cpp",
+        "./src/backend/boids_manager.cpp",
         "./src/backend/collision_hasher.cpp",
         "./src/backend/game.cpp",
         "./src/backend/player.cpp",
@@ -27,7 +28,7 @@
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")"
       ],
-      'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
+      'defines': [ 'NAPI_CPP_EXCEPTIONS' ],
     },
   ]
 }

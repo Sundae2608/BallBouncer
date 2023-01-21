@@ -1,4 +1,10 @@
 // Server code
+process.on('uncaughtException', function (exception) {
+  console.log(exception); // to see your exception details in the console
+  // if you are on production, maybe you can send the exception details to your
+  // email as well ?
+});
+
 const express = require('express')
 const app = express()
 const PORT = process.env.PORT || 3000;
@@ -26,7 +32,7 @@ var gameInstance = new game_wrapper.GameWrapper(
     /*yl=*/ -200,
     /*yu=*/ 200,
     /*seed=*/ 42,
-    /*num_available_singles=*/ 500
+    /*num_available_singles=*/ 300
 );
 
 var playerCreations = [];
@@ -78,30 +84,34 @@ function serverLoop() {
   // Game update
   currTime = Date.now();
   timeDelta = (currTime - lastTime) / 1000;
-  gameInstance.Update(timeDelta);
-  let data = {};
+  gameInstance.Update(timeDelta); 
 
   // Create data to send for each player
   let playerData = {};
   for (let playerId in players) {
     let pointArray = gameInstance.GetPlayerPosition(playerId);
     playerData[playerId] = {
-      playerPosition: { x: pointArray[0], y: pointArray[1] },
+      position: gameInstance.GetPlayerPosition(playerId),
+      singlePositions: gameInstance.GetSinglePositionsByPlayer(playerId),
+      singleIds: gameInstance.GetSingleIdsByPlayer(playerId),
     };
   }
 
   // Get the data for each position
-  let singlesData = {
-    singlesPosition: gameInstance.GetAllSinglesPosition(),
-    singlesId: gameInstance.GetAllSinglesId()
+  let neutralSingles = {
+    singlePositions: gameInstance.GetSinglePositionsAll(),
+    singleIds: gameInstance.GetSingleIdsAll()
   }
 
   // Construct the overall data
-  data = {
+  let data = {
     playerData: playerData,
-    singlesData: singlesData
+    neutralSingles: neutralSingles
   }
-  io.emit('updatePlayers', data);
+
+  for (let playerId in players) {
+    io.to(playerId).emit('updateData', data);
+  }
   lastTime = currTime;
 }
 setInterval(serverLoop, 1000/60);
