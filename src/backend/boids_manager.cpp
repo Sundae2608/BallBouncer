@@ -1,5 +1,7 @@
 #include "boids_manager.h"
-#include "collision_hasher.h"
+#include "position_hasher.h"
+#include "single/single.h"
+
 #include "../utils/math_utils.h"
 
 namespace backend {
@@ -40,12 +42,12 @@ namespace backend {
         }
     }
         
-    BoidsManager::BoidsManager(const CollisionHasher& collision_hasher) : collision_hasher_(collision_hasher) {};
+    BoidsManager::BoidsManager(const PositionHasher& position_hasher) : position_hasher_(position_hasher) {};
 
     void BoidsManager::BoidInfluence(const std::vector<Single*> singles) {
         for (Single* single : singles) {
             // Get nearby singles
-            const std::vector<Single*> nearby_singles = collision_hasher_.GetNearbySingles(single->GetPosition(), kBoidRange);
+            const std::vector<Single*> nearby_singles = position_hasher_.GetNearbySingles(single->GetPosition(), kBoidRange);
 
             // Calculate applicable singles
             std::vector<Single*> applicable_singles;

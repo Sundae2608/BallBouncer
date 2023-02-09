@@ -92,23 +92,23 @@ GameWrapper::GameWrapper(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Game
   int32_t seed = info[4].As<Napi::Number>();
   int32_t num_singles = info[5].As<Napi::Number>();
 
-  backend::GameConfig game_config = {
-    /*xl=*/ xl,
-    /*xu=*/ xu,
-    /*yl=*/ yl,
-    /*yu=*/ yu,
-    /*seed=*/ seed,
-    /*num_available_singles=*/ num_singles,
-    /*single_stats=*/ {
-        /*speed=*/ 30.0,
-        /*acceleration=*/ 150.0,
-        /*rotation_speed=*/ 20.0
-    }
-  };
-  backend::HashingConfig hashing_config = {
-    /*x_div=*/ 50.0,
-    /*y_div=*/ 50.0
-  };
+  backend::GameConfig game_config;
+  game_config.xl = xl;
+  game_config.xu = xu;
+  game_config.yl = yl;
+  game_config.yu = yu;
+  game_config.seed = seed;
+  game_config.num_available_singles = num_singles;
+
+  backend::SingleStats stats;
+  stats.speed = 30;
+  stats.acceleration = 150.0;
+  stats.rotation_speed = 20;
+  game_config.single_stats = stats;
+
+  backend::HashingConfig hashing_config;
+  hashing_config.x_div = 50.0;
+  hashing_config.y_div = 50.0;
   game_instance_ = std::make_unique<backend::Game>(game_config, hashing_config);
 }
 
@@ -153,7 +153,7 @@ void GameWrapper::Move(const Napi::CallbackInfo& info) {
         Napi::TypeError::New(env, "Player ID not found").ThrowAsJavaScriptException();
     }
         
-    return player_or.value()->SetGoalPosition(x.DoubleValue(), y.DoubleValue());
+    return player_or.value()->SetGoalPosition({x.DoubleValue(), y.DoubleValue()});
 }
 
 void GameWrapper::Update(const Napi::CallbackInfo& info) {

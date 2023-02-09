@@ -9,7 +9,7 @@
 namespace backend {
     class Player {
         public:
-            Player(uint32_t single_id, uint32_t faction_id, double x, double y, SingleStats& single_stats);
+            Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, SingleStats& single_stats);
 
             // Update the state of the player
             void UpdateState(double time_delta);
@@ -18,7 +18,7 @@ namespace backend {
             void UpdateIntention(double time_delta);
 
             // Update the goal of the player
-            void SetGoalPosition(double x, double y);
+            void SetGoalPosition(Vector2 p);
 
             // Absorb a single into a member of the team
             void ObtainSingle(Single* single);

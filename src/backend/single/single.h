@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #include "../point.h"
 #include "single_state.h"
 #include "single_stats.h"
@@ -7,7 +9,7 @@
 namespace backend {
     class Single {
         public:
-            Single(uint32_t id, uint32_t faction_id, double x, double y, const SingleStats& single_stats_);
+            Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats_);
 
             // Update the intention of the single
             void UpdateIntention(double time_delta);
@@ -15,29 +17,22 @@ namespace backend {
             // Update the state of the player
             void UpdateState(double time_delta);
 
-            // Set the goal position of the single
-            void SetGoalPosition(double x, double y);
-
             // Change the faction the single belongs to
             void SwitchFaction(uint32_t faction_id);
             
-            // Get the position of the single
-            void SetGoalPosition(Vector2 p);
-            
-            // Get the position of the single
+            // Getters
             Vector2 GetPosition() const;
-            
-            // Get the position of the single
             Vector2 GetVelocity() const;
+            double GetRadius() const;
+            double GetMass() const;
+            double GetSpeed() const;
+            uint32_t GetId() const;
+            uint32_t GetFactionId() const;
 
-            // Set velocity
+            // Setters
+            void SetGoalPosition(Vector2 p);
             void SetVelocity(Vector2 v);
-
-            // Get ID of the single
-            const uint32_t GetId() const;
-
-            // Get faction ID of the single
-            const uint32_t GetFactionId() const;
+            void SetSpeed(double speed);
 
         private:
             // Unique ID
@@ -53,19 +48,20 @@ namespace backend {
             // Current state
             SingleState single_state_;
 
+            // Size
+            double radius_;
+            double mass_;
+
             // Position
-            double x_;
-            double y_;
+            Vector2 p_;
             double speed_;
             double angle_;
 
             // Velocity
-            double vx_;
-            double vy_;
+            Vector2 v_;
 
             // Goal of the players
-            double goal_x_;
-            double goal_y_;
+            Vector2 goal_p_;
             double goal_speed_;
     };
 }

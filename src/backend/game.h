@@ -8,7 +8,8 @@
 #include <unordered_set>
 
 #include "boids_manager.h"
-#include "collision_hasher.h"
+#include "collision_manager.h"
+#include "position_hasher.h"
 #include "configs.h"
 #include "player.h"
 #include "rng.h"
@@ -61,10 +62,13 @@ namespace backend {
             double yu_;
 
             // Collision hasher
-            CollisionHasher collision_hasher_;
+            PositionHasher position_hasher_;
 
             // Boids manager
             BoidsManager boids_manager_;
+
+            // Collision manager
+            CollisionManager collision_manager_;
 
             // Map containing all the players
             std::unordered_map<std::string, std::unique_ptr<Player>> player_map_;

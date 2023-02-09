@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "../backend/point.h"
 
 namespace math_utils {
@@ -11,10 +13,11 @@ namespace math_utils {
     bool DoubleEqual(double a, double b);
 
     // Distance calculation
-    double Distance(double x1, double y1, double x2, double y2);
+    double Distance(backend::Vector2 p1, backend::Vector2 p2);
 
     // Check whether the distance between (x1, y1) and (x2, y2) is shorter than input distance
-    bool WithinDistance(double x1, double y1, double x2, double y2, double distance);
-    bool WithinDistance(const backend::Vector2 p1, const backend::Vector2 p2, double distance);
+    bool WithinDistance(backend::Vector2 p1, backend::Vector2 p2, double distance);
 
+    // Return the sunflower seed formation based on the radius, number of seeds and the spreading distance
+    std::vector<backend::Vector2> GetSunflowerFormation(double radius, int num_seeds, double spreading_distance);
 }

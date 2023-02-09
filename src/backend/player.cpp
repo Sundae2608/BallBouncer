@@ -10,20 +10,26 @@
 namespace backend {
     namespace {
         constexpr double kStandingDistance = 0.1;
+        constexpr double spreadingDistance = 3;
     }
 
-    Player::Player(uint32_t single_id, uint32_t faction_id, double x, double y, SingleStats& single_stats) :
+    Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, SingleStats& single_stats) :
         faction_id_(faction_id) {
-        main_single_ = std::make_unique<Single>(single_id, faction_id, x, y, single_stats);
+        main_single_ = std::make_unique<Single>(single_id, faction_id, position, mass, radius, single_stats);
     }
 
     void Player::UpdateIntention(double time_delta) {
         // Update the intention of the main single and each individual
         main_single_->UpdateIntention(time_delta);
 
+        // Get the formation offset
+        std::vector<Vector2> formation_offsets = math_utils::GetSunflowerFormation(main_single_->GetRadius(), member_singles_.size(), 2);
+
         // Update the intention of the single the player is managing
-        for (Single* single : member_singles_) {
-            single->SetGoalPosition(main_single_->GetPosition());
+        for (int i = 0; i < member_singles_.size(); i++) {
+            Single* single = member_singles_.at(i);
+            Vector2 offset = formation_offsets.at(i);
+            single->SetGoalPosition(main_single_->GetPosition() + offset);
             single->UpdateIntention(time_delta);
         }
         
@@ -33,8 +39,8 @@ namespace backend {
         main_single_->UpdateState(time_delta);
     }
 
-    void Player::SetGoalPosition(double x, double y) {
-        main_single_->SetGoalPosition(x, y);
+    void Player::SetGoalPosition(Vector2 p) {
+        main_single_->SetGoalPosition(p);
     }
 
     void Player::ObtainSingle(Single* single) {

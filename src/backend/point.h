@@ -25,5 +25,16 @@ namespace backend {
             result.y = this->y / denominator;
             return result;
         }
+
+        Vector2 operator*(double multiplier) {
+            Vector2 result;
+            result.x = this->x * multiplier;
+            result.y = this->y * multiplier;
+            return result;
+        }
+
+        double SquareMagnitude() {
+            return x*x + y*y;
+        }
     };
 }

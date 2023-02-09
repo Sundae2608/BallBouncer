@@ -1,10 +1,10 @@
 #include <algorithm>
 #include <iostream>
 
+#include "single.h"
 #include "../../utils/math_utils.h"
 #include "../../utils/move_utils.h"
 #include "../point.h"
-#include "../single/single.h"
 
 namespace backend {
     namespace  {
@@ -19,10 +19,9 @@ namespace backend {
         constexpr double kOutOfReachSpeedMultiplier = 1.4;
     }
 
-    Single::Single(uint32_t id, uint32_t faction_id, double x, double y, const SingleStats& single_stats) : 
-        id_(id), faction_id_(faction_id), x_(x), y_(y), single_state_(SingleState::STANDING), single_stats_(single_stats) {
-        goal_x_ = x;
-        goal_y_ = y;
+    Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats) : 
+        id_(id), faction_id_(faction_id), p_(position), single_state_(SingleState::STANDING), single_stats_(single_stats), mass_(mass), radius_(radius) {
+        goal_p_ = p_;
         angle_ = 0;
     }
 
@@ -35,8 +34,8 @@ namespace backend {
         }
 
         // Update based on states
-        double distance_to_goal = math_utils::Distance(x_, y_, goal_x_, goal_y_);
-        double toward_angle = atan2(goal_y_ - y_, goal_x_ - x_);
+        double distance_to_goal = math_utils::Distance(p_, goal_p_);
+        double toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
 
         switch (single_state_) {
             case SingleState::STANDING:
@@ -71,8 +70,7 @@ namespace backend {
         }
 
         // Calculate the intended velocity
-        vx_ = cos(angle_) * speed_;
-        vy_ = sin(angle_) * speed_;
+        v_ = {cos(angle_) * speed_, sin(angle_) * speed_};
     }
 
     void Single::UpdateState(double time_delta) {
@@ -82,14 +80,11 @@ namespace backend {
         }
 
         // If potentially overshooting, move towards
-        double delta_x = vx_ * time_delta;
-        double delta_y = vy_ * time_delta;
-        if (abs(goal_x_ - x_) < abs(delta_x) && abs(goal_y_ - y_) < abs(delta_y)) {
-            x_ = goal_x_;
-            y_ = goal_y_;
+        Vector2 dv = v_ * time_delta;
+        if (goal_p_.x - p_.x < abs(dv.x) && abs(goal_p_.y - p_.y) < abs(dv.y)) {
+            p_ = goal_p_;
         } else {
-            x_ += vx_ * time_delta;
-            y_ += vy_ * time_delta;
+            p_ = p_ + v_ * time_delta;
         }
     }
 
@@ -100,13 +95,7 @@ namespace backend {
     }
 
     void Single::SetGoalPosition(Vector2 p) {
-        goal_x_ = p.x;
-        goal_y_ = p.y;
-    }
-
-    void Single::SetGoalPosition(double x, double y) {
-        goal_x_ = x;
-        goal_y_ = y;
+        goal_p_ = p;
     }
 
     void Single::SwitchFaction(uint32_t faction_id) {
@@ -114,23 +103,38 @@ namespace backend {
     }
 
     Vector2 Single::GetPosition() const {
-        return { x_, y_};
+        return p_;
     }
 
     Vector2 Single::GetVelocity() const {
-        return { vx_, vy_};
+        return v_;
+    }
+
+    double Single::GetRadius() const {
+        return radius_;
+    }
+
+    double Single::GetMass() const {
+        return mass_;
+    }
+
+    double Single::GetSpeed() const {
+        return speed_;
     }
 
     void Single::SetVelocity(Vector2 v) {
-        vx_ = v.x;
-        vy_ = v.y;
+        v_ = v;
     }
 
-    const uint32_t Single::GetId() const {
+    void Single::SetSpeed(double speed) {
+        speed_ = speed;
+    }
+
+    uint32_t Single::GetId() const {
         return id_;
     }
 
-    const uint32_t Single::GetFactionId() const {
+    uint32_t Single::GetFactionId() const {
         return faction_id_;
     }
 }

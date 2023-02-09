@@ -4,14 +4,14 @@
 #include "position_hasher.h"
 
 namespace backend {
-    class BoidsManager {
+    class CollisionManager {
         public:
-            BoidsManager(const PositionHasher& position_hasher);
+            CollisionManager(const PositionHasher& position_hasher);
             
             // Influence singles velocity using Boid rules.
-            void BoidInfluence(const std::vector<Single*> singles);
+            void ProcessCollision(double time_delta);
         private:
             // Collision hasher
             const PositionHasher& position_hasher_;
     };
-}  //  namespace backend
+}

@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'https://unpkg.com/three@0.138.3/examples/jsm/controls/OrbitControls.js'
 import { TransformControls } from 'https://unpkg.com/three@0.138.3/examples/jsm/controls/TransformControls.js'
+import { GUI } from 'https://unpkg.com/three@0.138.3/examples/jsm/libs/lil-gui.module.min.js'
 import Stats from 'https://unpkg.com/three@0.138.3/examples/jsm/libs/stats.module'
 
 const randomColor = (() => {
@@ -80,6 +81,57 @@ const renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.shadowMap.enabled = true;
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
+
+// GUI
+const gui = new GUI();
+let folderLocal = gui.addFolder( 'Local Clipping' );
+let propsLocal = {
+
+    get 'Enabled'() {
+        return 10;
+    },
+    set 'Enabled'( v ) {
+        return 10;
+    },
+
+    get 'Shadows'() {
+        return 10;
+    },
+    set 'Shadows'( v ) {
+        return 10;
+    },
+
+    get 'Plane'() {
+        return 10;
+    },
+    set 'Plane'( v ) {
+        return 10;
+    }
+};
+
+let folderGlobal = gui.addFolder( 'Global Clipping' );
+let propsGlobal = {
+    get 'Enabled'() {
+        return 10;
+    },
+    set 'Enabled'( v ) {
+        return 10;
+    },
+    get 'Plane'() {
+        return;
+    },
+    set 'Plane'( v ) {
+        return;
+    }
+};
+
+folderLocal.add( propsLocal, 'Enabled' );
+folderLocal.add( propsLocal, 'Shadows' );
+folderLocal.add( propsLocal, 'Plane', 0.3, 1.25 );
+
+folderGlobal.add( propsGlobal, 'Enabled' );
+folderGlobal.add( propsGlobal, 'Plane', - 0.4, 3 );
+
 
 // Camera set up
 const CAMERA_OFFSET_X = 0;
