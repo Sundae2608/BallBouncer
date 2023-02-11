@@ -30,8 +30,9 @@ function processPlayerData(playerData, playerObjects, playersFound, playerColorM
 
             // Create an object with that color
             const geometry = new THREE.SphereGeometry( 2, 40, 40 );
-            const material = new THREE.MeshBasicMaterial( {color: color} );
+            const material = new THREE.MeshToonMaterial( {color: color} );
             const obj = new THREE.Mesh( geometry, material );
+            obj.castShadow = true;
             scene.add(obj);
             playerObjects[playerId] = obj;
         }
@@ -58,8 +59,9 @@ function processSingleData(singlesData, singleObjects, singlesFound, playerColor
 
         if (!(singleId in singleObjects)) {
             const geometry = new THREE.SphereGeometry( 1.58, 40, 40 );
-            const material = new THREE.MeshBasicMaterial( {color: 0x696969} );
+            const material = new THREE.MeshToonMaterial( {color: 0x696969} );
             const obj = new THREE.Mesh( geometry, material );
+            obj.castShadow = true;
             scene.add(obj);
             singleObjects[singleId] = obj;
         }
@@ -126,27 +128,27 @@ if (CAMERA_CONTROL) {
 const listener = new THREE.AudioListener();
 camera.add(listener);
 const leftClickSound = new THREE.Audio(listener);
+const rightClickSound = new THREE.Audio(listener);
 
 // Load a sound and set it to buffer
 const audioLoader = new THREE.AudioLoader();
 audioLoader.load('audio/click1.mp3', function(buffer) {
+    rightClickSound.setBuffer(buffer);
+    rightClickSound.setVolume(0.25);
+})
+audioLoader.load('audio/click2.mp3', function(buffer) {
     leftClickSound.setBuffer(buffer);
     leftClickSound.setVolume(0.25);
 })
 
 // Light setup
+// scene.background = new THREE.Color( 0xf0f0f0 );		
 scene.background = new THREE.Color( 0xf0f0f0 );		
 scene.add( new THREE.AmbientLight( 0xf0f0f0 ) );		
-const light = new THREE.SpotLight( 0xffffff, 1.5 );
-light.position.set( 0, 0, 200 );
-light.angle = Math.PI;
-light.castShadow = true;
-light.shadow.camera.near = 200;
-light.shadow.camera.far = 2000;
-light.shadow.bias = - 0.000222;
-light.shadow.mapSize.width = 1024;
-light.shadow.mapSize.height = 1024;
-scene.add( light );
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
+directionalLight.position.set( 1, -1, 1 );
+directionalLight.castShadow = true;
+scene.add( directionalLight );
 
 // Box setup
 const boxGeometry = new THREE.BoxGeometry( 2000, 2000, 0.1 );
@@ -155,8 +157,17 @@ const box = new THREE.Mesh( boxGeometry, boxMaterial );
 box.position.x = 0;
 box.position.y = 0;
 box.position.z = -0.1;
-box.receiveShadow = true;
 scene.add( box );
+
+// Box setup
+const shadowGeometry = new THREE.BoxGeometry( 2000, 2000, 0.1 );
+const shadownMaterial = new THREE.ShadowMaterial( { opacity: 1.0 } );
+const shadowBox = new THREE.Mesh( boxGeometry, shadownMaterial );
+shadowBox.receiveShadow = true;
+shadowBox.position.x = 0;
+shadowBox.position.y = 0;
+shadowBox.position.z = -0.2;
+scene.add( shadowBox );
 
 // Helper setup
 const helper = new THREE.GridHelper( 2000, 200 );
@@ -190,10 +201,12 @@ window.addEventListener('pointermove', onPointerMove)
 function onPointerDown(event) {
     // Move if it is a right click
     if (event.button == 2) {
-        leftClickSound.play();
+        rightClickSound.play();
         if (movePosition !== null) {
             socket.emit('move', movePosition);
         }
+    } else if (event.button == 0) {
+        leftClickSound.play();
     }
 }
 window.addEventListener('mouseup', onPointerDown)
