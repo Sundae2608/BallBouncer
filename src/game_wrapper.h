@@ -36,6 +36,9 @@ class GameWrapper : public Napi::ObjectWrap<GameWrapper> {
         Napi::Value GetSingleIdsByPlayer(const Napi::CallbackInfo& info);
         Napi::Value GetSingleIdsNeutral(const Napi::CallbackInfo& info);
 
+        // Modify tuning variables
+        void ModifyVariable(const Napi::CallbackInfo& info);
+
         // Internally stored game instance
         std::unique_ptr<backend::Game> game_instance_;
 };

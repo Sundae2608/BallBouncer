@@ -73,7 +73,7 @@ namespace backend {
     void Game::AddNewPlayer(std::string player_id) {
         if (player_map_.find(player_id) == player_map_.end()) {
             Vector2 random_position = {rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_)};
-            player_map_[player_id] = std::make_unique<Player>(GetUniqueSingleId(), GetUniqueFactionId(), random_position, 1000, 10, universal_single_stats_);
+            player_map_[player_id] = std::make_unique<Player>(GetUniqueSingleId(), GetUniqueFactionId(), random_position, 1000, 1, universal_single_stats_, rng_);
             position_hasher_.AddSingle(player_map_[player_id].get()->GetSingle());
         }
     }

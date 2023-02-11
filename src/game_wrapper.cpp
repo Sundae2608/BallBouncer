@@ -5,6 +5,7 @@
 #include "backend/game.h"
 #include "backend/player.h"
 #include "backend/single/single.h"
+#include "backend/variables.h"
 #include "game_wrapper.h"
 
 namespace {
@@ -62,6 +63,9 @@ Napi::Object GameWrapper::Init(Napi::Env env, Napi::Object exports) {
     InstanceMethod("GetSingleIdsAll", &GameWrapper::GetSingleIdsAll),
     InstanceMethod("GetSingleIdsByPlayer", &GameWrapper::GetSingleIdsByPlayer),
     InstanceMethod("GetSingleIdsNeutral", &GameWrapper::GetSingleIdsByPlayer),
+
+    // Update tuning variables
+    InstanceMethod("NodifyVariable", &GameWrapper::ModifyVariable),
   });
 
   constructor = Napi::Persistent(func);
@@ -253,6 +257,17 @@ Napi::Value GameWrapper::GetSingleIdsNeutral(const Napi::CallbackInfo& info) {
     }
     std::vector<backend::Single*> singles = game_instance_->GetNeutralSingles();
     return CreateIdFromSingles(singles, info);
+}
+
+void GameWrapper::ModifyVariable(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 2 && !info[0].IsString() && !info[1].IsNumber()) {
+        Napi::TypeError::New(env, "Function argument ModifyVariable(string variable, double value) expected").ThrowAsJavaScriptException();
+    }
+    auto variable = info[0].As<Napi::String>();
+    auto value = info[1].As<Napi::Number>();
+    backend::ModifyVariable(variable, value);
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {

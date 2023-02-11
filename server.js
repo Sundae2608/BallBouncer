@@ -48,6 +48,7 @@ function connected(socket) {
   });
 
   socket.on('disconnect', () => {
+    console.log("Player at id " + socket.id + " disconnected");
     playerDestructions.push(socket.id);
   });
   
@@ -59,6 +60,10 @@ function connected(socket) {
         y: moveData.y
       }
     );
+  });
+
+  socket.on('modifyVariable', data => {
+    gameInstance.ModifyVariable(data.variable, data.value);
   });
 }
 

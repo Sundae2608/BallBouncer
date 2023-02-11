@@ -1,4 +1,5 @@
 #include "player.h"
+#include "variables.h"
 #include "single/single.h"
 #include "../utils/math_utils.h"
 
@@ -13,8 +14,8 @@ namespace backend {
         constexpr double spreadingDistance = 3;
     }
 
-    Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, SingleStats& single_stats) :
-        faction_id_(faction_id) {
+    Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, SingleStats& single_stats, RNG& rng) :
+        faction_id_(faction_id), rng_(rng) {
         main_single_ = std::make_unique<Single>(single_id, faction_id, position, mass, radius, single_stats);
     }
 
@@ -23,13 +24,18 @@ namespace backend {
         main_single_->UpdateIntention(time_delta);
 
         // Get the formation offset
-        std::vector<Vector2> formation_offsets = math_utils::GetSunflowerFormation(main_single_->GetRadius(), member_singles_.size(), 2);
+        std::vector<Vector2> formation_offsets = math_utils::GetSunflowerFormation(main_single_->GetRadius(), member_singles_.size(), game_vars.single_distance_within_player);
 
         // Update the intention of the single the player is managing
         for (int i = 0; i < member_singles_.size(); i++) {
             Single* single = member_singles_.at(i);
-            Vector2 offset = formation_offsets.at(i);
-            single->SetGoalPosition(main_single_->GetPosition() + offset);
+            Vector2 formation_offset = formation_offsets.at(i);
+            Vector2 position_offset = {
+                rng_.RandDouble(
+                    -game_vars.pos_randomization, game_vars.pos_randomization), 
+                rng_.RandDouble(
+                    -game_vars.pos_randomization, game_vars.pos_randomization)};
+            single->SetGoalPosition(main_single_->GetPosition() + formation_offset + position_offset);
             single->UpdateIntention(time_delta);
         }
         

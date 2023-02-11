@@ -75,7 +75,6 @@ function processSingleData(singlesData, singleObjects, singlesFound, playerColor
 const CAMERA_CONTROL = false;
 
 // Scene and renderer setup
-
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.shadowMap.enabled = true;
@@ -83,54 +82,27 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 // GUI
+const gameVariables = {
+    playerRadius: 1.5
+}
 const gui = new GUI();
-let folderLocal = gui.addFolder( 'Local Clipping' );
+let folderLocal = gui.addFolder( 'Game variables' );
 let propsLocal = {
 
-    get 'Enabled'() {
-        return 10;
+    get 'player_radius'() {
+        return gameVariables.playerRadius;
     },
-    set 'Enabled'( v ) {
-        return 10;
+    set 'player_radius'(v) {
+        gameVariables.playerRadius = v;
+        data = {
+            variable: "player_radius",
+            value: v
+        }
+        socket.emit('modifyVariable', data);
     },
-
-    get 'Shadows'() {
-        return 10;
-    },
-    set 'Shadows'( v ) {
-        return 10;
-    },
-
-    get 'Plane'() {
-        return 10;
-    },
-    set 'Plane'( v ) {
-        return 10;
-    }
 };
 
-let folderGlobal = gui.addFolder( 'Global Clipping' );
-let propsGlobal = {
-    get 'Enabled'() {
-        return 10;
-    },
-    set 'Enabled'( v ) {
-        return 10;
-    },
-    get 'Plane'() {
-        return;
-    },
-    set 'Plane'( v ) {
-        return;
-    }
-};
-
-folderLocal.add( propsLocal, 'Enabled' );
-folderLocal.add( propsLocal, 'Shadows' );
-folderLocal.add( propsLocal, 'Plane', 0.3, 1.25 );
-
-folderGlobal.add( propsGlobal, 'Enabled' );
-folderGlobal.add( propsGlobal, 'Plane', - 0.4, 3 );
+folderLocal.add( propsLocal, 'player_radius', 1.0, 4.0 );
 
 
 // Camera set up
@@ -149,6 +121,18 @@ if (CAMERA_CONTROL) {
     const transformControl = new TransformControls( camera, renderer.domElement );
     scene.add( transformControl );
 }
+
+// Audio set up
+const listener = new THREE.AudioListener();
+camera.add(listener);
+const leftClickSound = new THREE.Audio(listener);
+
+// Load a sound and set it to buffer
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load('audio/click1.mp3', function(buffer) {
+    leftClickSound.setBuffer(buffer);
+    leftClickSound.setVolume(0.25);
+})
 
 // Light setup
 scene.background = new THREE.Color( 0xf0f0f0 );		
@@ -204,11 +188,16 @@ function onPointerMove(event) {
 window.addEventListener('pointermove', onPointerMove)
 
 function onPointerDown(event) {
-    if (movePosition !== null) {
-        socket.emit('move', movePosition);
+    // Move if it is a right click
+    if (event.button == 2) {
+        leftClickSound.play();
+        if (movePosition !== null) {
+            socket.emit('move', movePosition);
+        }
     }
 }
-window.addEventListener('pointerdown', onPointerDown)
+window.addEventListener('mouseup', onPointerDown)
+window.addEventListener('contextmenu', event => {event.preventDefault()});
 
 // Stats setup
 const stats = Stats()
