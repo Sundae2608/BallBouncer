@@ -103,16 +103,22 @@ let propsLocal = {
         socket.emit('modifyVariable', data);
     },
 };
-
 folderLocal.add( propsLocal, 'player_radius', 1.0, 4.0 );
 
-
 // Camera set up
-const CAMERA_OFFSET_X = 0;
-const CAMERA_OFFSET_Y = -600;
-const CAMERA_OFFSET_Z = 340;
-const camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 1, 10000 );
-camera.position.set( CAMERA_OFFSET_X, CAMERA_OFFSET_Y, CAMERA_OFFSET_Z );
+const CAMERA_BASE_DISTANCE = 600;
+const CAMERA_BASE_ANGLE = 0.6;
+const CAMERA_ZOOM_TIME = 0.3;
+const CAMERA_ZOOM_COEFFICIENT = 1.1;
+
+var cameraDistance = CAMERA_BASE_DISTANCE;
+var cameraTowardDistance = cameraDistance;
+var cameraRemainingZoomTime = 0;
+var cameraOffsetX = 0;
+var cameraOffsetY = -Math.cos(CAMERA_BASE_ANGLE) * cameraDistance;
+var cameraOffsetZ = Math.sin(CAMERA_BASE_ANGLE) * cameraDistance;
+var camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 1, 10000 );
+camera.position.set( 0, cameraOffsetY, cameraOffsetZ );
 camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 // Controls
@@ -144,7 +150,7 @@ audioLoader.load('audio/click2.mp3', function(buffer) {
 // Light setup
 // scene.background = new THREE.Color( 0xf0f0f0 );		
 scene.background = new THREE.Color( 0xf0f0f0 );		
-scene.add( new THREE.AmbientLight( 0xf0f0f0 ) );		
+scene.add( new THREE.AmbientLight( 0xf0f0f0 , 0.7) );		
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
 directionalLight.position.set( 1, -1, 1 );
 directionalLight.castShadow = true;
@@ -260,6 +266,7 @@ socket.on('updateData', data => {
 })
 
 // Animation setup
+var lastTime = Date.now();
 function animate() {
     requestAnimationFrame( animate );
     
@@ -271,14 +278,29 @@ function animate() {
         casterMarker.position.y = intersect[0].point.y;
         movePosition = {x: intersect[0].point.x, y: intersect[0].point.y}
     }
+    let currTime = Date.now();
+    let timeDelta = (currTime - lastTime) / 1000;
 
     // Update the camera position
     if (selfID in playerObjects) {
-        camera.position.x = playerObjects[selfID].position.x + CAMERA_OFFSET_X;
-        camera.position.y = playerObjects[selfID].position.y + CAMERA_OFFSET_Y;
+        // Modify the zoom behavior
+        if (cameraRemainingZoomTime > 0) {
+            let zoomTime = Math.min(cameraRemainingZoomTime, timeDelta)
+            cameraDistance = cameraDistance + (cameraTowardDistance - cameraDistance) * zoomTime / cameraRemainingZoomTime;
+            cameraRemainingZoomTime -= zoomTime;
+        }
+
+        // Change the camera behavior
+        var cameraOffsetX = 0;
+        var cameraOffsetY = -Math.cos(CAMERA_BASE_ANGLE) * cameraDistance;
+        var cameraOffsetZ = Math.sin(CAMERA_BASE_ANGLE) * cameraDistance;
+        camera.position.x = playerObjects[selfID].position.x + cameraOffsetX;
+        camera.position.y = playerObjects[selfID].position.y + cameraOffsetY;
+        camera.position.z = cameraOffsetZ;
     }
     stats.update();
     renderer.render( scene, camera );
+    lastTime = currTime;
 };
 animate();
 
@@ -291,3 +313,14 @@ function onWindowResize() {
 }
 window.addEventListener('resize', onWindowResize);
 
+// Scrolling to zoom in and out
+function onWheelEvent(event) {
+    if (event.deltaY > 0) {
+        cameraTowardDistance *= CAMERA_ZOOM_COEFFICIENT;
+        cameraRemainingZoomTime = CAMERA_ZOOM_TIME;
+    } else {
+        cameraTowardDistance /= CAMERA_ZOOM_COEFFICIENT;
+        cameraRemainingZoomTime = CAMERA_ZOOM_TIME;
+    }
+}
+window.addEventListener("wheel", onWheelEvent);
