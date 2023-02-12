@@ -6,6 +6,7 @@
 #include "configs.h"
 #include "game.h"
 #include "player.h"
+#include "variables.h"
 #include "single/single_stats.h"
 #include "../utils/math_utils.h"
 
@@ -28,7 +29,9 @@ namespace backend {
 
         for (int i = 0; i < game_config.num_available_singles; i++) {
             Vector2 random_position = {rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_)};
-            auto single = std::make_unique<Single>(GetUniqueSingleId(), neutral_faction_id_, random_position, 10, 1, universal_single_stats_);
+            auto single = std::make_unique<Single>(
+                GetUniqueSingleId(), neutral_faction_id_, random_position, 
+                g_game_vars.single_starting_mass, g_game_vars.single_radius, universal_single_stats_);
             auto single_ptr = single.get();
             available_singles_[single.get()] = std::move(single);
             position_hasher_.AddSingle(single_ptr);
@@ -73,7 +76,9 @@ namespace backend {
     void Game::AddNewPlayer(std::string player_id) {
         if (player_map_.find(player_id) == player_map_.end()) {
             Vector2 random_position = {rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_)};
-            player_map_[player_id] = std::make_unique<Player>(GetUniqueSingleId(), GetUniqueFactionId(), random_position, 1000, 1, universal_single_stats_, rng_);
+            player_map_[player_id] = std::make_unique<Player>(
+                GetUniqueSingleId(), GetUniqueFactionId(), random_position, 
+                g_game_vars.player_starting_mass, g_game_vars.player_radius, universal_single_stats_, rng_);
             position_hasher_.AddSingle(player_map_[player_id].get()->GetSingle());
         }
     }

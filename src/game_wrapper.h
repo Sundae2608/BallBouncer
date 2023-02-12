@@ -23,8 +23,9 @@ class GameWrapper : public Napi::ObjectWrap<GameWrapper> {
         // Wrap Update function
         void Update(const Napi::CallbackInfo& info);
 
-        // Wrap GetPlayerPosition function
+        // Get player data.
         Napi::Value GetPlayerPosition(const Napi::CallbackInfo& info);
+        Napi::Value GetPlayerRadius(const Napi::CallbackInfo& info);
         
         // Get all single positions
         Napi::Value GetSinglePositionsAll(const Napi::CallbackInfo& info);

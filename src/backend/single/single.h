@@ -19,6 +19,9 @@ namespace backend {
 
             // Change the faction the single belongs to
             void SwitchFaction(uint32_t faction_id);
+
+            // Gain mass
+            void GainMass(double added_mass);
             
             // Getters
             Vector2 GetPosition() const;

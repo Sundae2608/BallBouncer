@@ -13,7 +13,7 @@ const randomColor = (() => {
   
     return () => {
       var h = randomInt(0, 360);
-      var s = randomInt(42, 98);
+      var s = randomInt(42, 60);
       var l = randomInt(40, 40);
       return `hsl(${h},${s}%,${l}%)`;
     };
@@ -23,6 +23,7 @@ function processPlayerData(playerData, playerObjects, playersFound, playerColorM
     for (let playerId in playerData) {
         playersFound[playerId] = true;
         let pos = new Float64Array(playerData[playerId].position);
+        let radius = playerData[playerId].radius;
         if (!(playerId in playerObjects)) {
             // Pick a color for the player
             const color = randomColor();
@@ -37,9 +38,10 @@ function processPlayerData(playerData, playerObjects, playersFound, playerColorM
             playerObjects[playerId] = obj;
         }
         let playerObject = playerObjects[playerId];
+        playerObject.scale.setScalar(radius / 2);
         playerObject.position.x = pos[0];
         playerObject.position.y = pos[1];
-        playerObject.position.z = 1;
+        playerObject.position.z = radius / 2;
     }
 }
 
@@ -68,7 +70,7 @@ function processSingleData(singlesData, singleObjects, singlesFound, playerColor
         let singleObject = singleObjects[singleId];
         singleObject.position.x = singlePosition[0];
         singleObject.position.y = singlePosition[1];
-        singleObject.position.z = 1;
+        singleObject.position.z = 1.58 / 2;
         singleObject.material.color.set(color);
     }
 }

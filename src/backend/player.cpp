@@ -24,7 +24,7 @@ namespace backend {
         main_single_->UpdateIntention(time_delta);
 
         // Get the formation offset
-        std::vector<Vector2> formation_offsets = math_utils::GetSunflowerFormation(main_single_->GetRadius(), member_singles_.size(), game_vars.single_distance_within_player);
+        std::vector<Vector2> formation_offsets = math_utils::GetSunflowerFormation(g_game_vars.player_radius, member_singles_.size(), g_game_vars.single_distance_within_player);
 
         // Update the intention of the single the player is managing
         for (int i = 0; i < member_singles_.size(); i++) {
@@ -32,9 +32,9 @@ namespace backend {
             Vector2 formation_offset = formation_offsets.at(i);
             Vector2 position_offset = {
                 rng_.RandDouble(
-                    -game_vars.pos_randomization, game_vars.pos_randomization), 
+                    -g_game_vars.single_pos_randomization, g_game_vars.single_pos_randomization), 
                 rng_.RandDouble(
-                    -game_vars.pos_randomization, game_vars.pos_randomization)};
+                    -g_game_vars.single_pos_randomization, g_game_vars.single_pos_randomization)};
             single->SetGoalPosition(main_single_->GetPosition() + formation_offset + position_offset);
             single->UpdateIntention(time_delta);
         }
@@ -50,7 +50,11 @@ namespace backend {
     }
 
     void Player::ObtainSingle(Single* single) {
+        // Bring the single into the fore.
         member_singles_.push_back(single);
+
+        // Gain mass from the eaten single
+        main_single_->GainMass(single->GetMass() * g_game_vars.player_eating_mass_ratio);
     }
 
     Single* Player::GetSingle() {

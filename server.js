@@ -97,6 +97,7 @@ function serverLoop() {
     let pointArray = gameInstance.GetPlayerPosition(playerId);
     playerData[playerId] = {
       position: gameInstance.GetPlayerPosition(playerId),
+      radius: gameInstance.GetPlayerMass(playerId),
       singlePositions: gameInstance.GetSinglePositionsByPlayer(playerId),
       singleIds: gameInstance.GetSingleIdsByPlayer(playerId),
     };

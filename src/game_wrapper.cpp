@@ -56,6 +56,7 @@ Napi::Object GameWrapper::Init(Napi::Env env, Napi::Object exports) {
 
     // Getting data
     InstanceMethod("GetPlayerPosition", &GameWrapper::GetPlayerPosition),
+    InstanceMethod("GetPlayerMass", &GameWrapper::GetPlayerRadius),
     InstanceMethod("GetSinglePositionsAll", &GameWrapper::GetSinglePositionsAll),
     InstanceMethod("GetSinglePositionsByPlayer", &GameWrapper::GetSinglePositionsByPlayer),
     InstanceMethod("GetSinglePositionsNeutral", &GameWrapper::GetSinglePositionsNeutral),
@@ -189,6 +190,21 @@ Napi::Value GameWrapper::GetPlayerPosition(const Napi::CallbackInfo& info) {
     point_array[0] = point_value.x;
     point_array[1] = point_value.y;
     return point_array;
+}
+
+Napi::Value GameWrapper::GetPlayerRadius(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    if (info.Length() != 1 || !info[0].IsString()) {
+        Napi::TypeError::New(env, "Function argument GetPlayerRadius(string player_id) expected").ThrowAsJavaScriptException();
+    }
+    auto player_id = info[0].As<Napi::String>();
+    auto player_or = game_instance_->GetPlayer(player_id);
+    if (!player_or.has_value()) {
+        Napi::TypeError::New(env, "Player ID not found").ThrowAsJavaScriptException();
+    }
+    return Napi::Number::New(env, player_or.value()->GetSingle()->GetRadius());
 }
 
 Napi::Value GameWrapper::GetSinglePositionsAll(const Napi::CallbackInfo& info) {

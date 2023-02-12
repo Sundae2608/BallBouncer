@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <math.h>
 
 #include "single.h"
 #include "../../utils/math_utils.h"
@@ -100,6 +101,12 @@ namespace backend {
 
     void Single::SwitchFaction(uint32_t faction_id) {
         faction_id_ = faction_id;
+    }
+    
+    void Single::GainMass(double added_mass) {
+        double new_mass = mass_ + added_mass;
+        radius_ = pow(new_mass / mass_, 1.0 / 3.0) * radius_;
+        mass_ = new_mass;
     }
 
     Vector2 Single::GetPosition() const {
