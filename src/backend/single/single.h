@@ -4,7 +4,7 @@
 
 #include "../rng.h"
 #include "../point.h"
-#include "single_state.h"
+#include "state.h"
 #include "single_stats.h"
 
 namespace backend {

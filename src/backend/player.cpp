@@ -9,10 +9,6 @@
 #include "point.h"
 
 namespace backend {
-    namespace {
-        constexpr double kStandingDistance = 0.1;
-        constexpr double spreadingDistance = 3;
-    }
 
     Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, SingleStats& single_stats, RNG& rng) :
         faction_id_(faction_id), rng_(rng) {

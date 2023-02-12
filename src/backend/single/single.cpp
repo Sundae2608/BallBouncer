@@ -9,18 +9,6 @@
 #include "../variables.h"
 
 namespace backend {
-    namespace  {
-        // Distance to the goal in which the agent should be considered STANDING.
-        constexpr double kStandingDist = 0.1;
-
-        // The coefficient of the out of reach distance.
-        // When multiplied with the inherent speed, the result represents the distance over which
-        // single is considered out of position and need to catch up. In that case, the speed in which
-        // the agent run will be multiplied to catch up.
-        constexpr double kOutOfReachCoefficient = 5;
-        constexpr double kOutOfReachSpeedMultiplier = 1.4;
-    }
-
     Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats, RNG& rng) : 
         id_(id), faction_id_(faction_id), p_(position), single_state_(SingleState::STANDING), 
         single_stats_(single_stats), mass_(mass), radius_(radius), rng_(rng) {
@@ -44,16 +32,16 @@ namespace backend {
         switch (single_state_) {
             case SingleState::STANDING:
                 goal_speed_ = 0;
-                if (distance_to_goal > kStandingDist) {
+                if (distance_to_goal > g_game_vars.single_standing_dist) {
                     SwitchSingleState(SingleState::MOVING);
                     angle_ = toward_angle;
                 }
                 break;
             case SingleState::MOVING:
                 goal_speed_ = single_stats_.speed;
-                if (!math_utils::DoubleEqual(angle_, toward_angle, 1e-1) && distance_to_goal > kStandingDist) {
+                if (!math_utils::DoubleEqual(angle_, toward_angle, 1e-1) && distance_to_goal > g_game_vars.single_standing_dist) {
                     SwitchSingleState(SingleState::ROTATING);
-                } else if (distance_to_goal < kStandingDist) {
+                } else if (distance_to_goal < g_game_vars.single_standing_dist) {
                     SwitchSingleState(SingleState::STANDING);
                 }
                 break;
@@ -61,11 +49,11 @@ namespace backend {
                 // Rotate the angle
                 goal_speed_= speed_;
                 move_utils::RotateAngle(&angle_, toward_angle, single_stats_.rotation_speed * time_delta);
-                if (distance_to_goal > kStandingDist) {
+                if (distance_to_goal > g_game_vars.single_standing_dist) {
                     if (math_utils::DoubleEqual(angle_, toward_angle, 1e-1)) {
                         SwitchSingleState(SingleState::MOVING);
                     }
-                } else if (distance_to_goal < kStandingDist) {
+                } else if (distance_to_goal < g_game_vars.single_standing_dist) {
                     SwitchSingleState(SingleState::STANDING);
                 }
                 break;

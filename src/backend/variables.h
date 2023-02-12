@@ -17,6 +17,9 @@ namespace backend {
             double single_pos_randomization = 0.03;
             double single_decision_delay = 0.2;
             double single_decision_delay_variation = 0.15;
+            double single_standing_dist = 0.1;
+            double single_out_of_reach_coef = 5;
+            double single_out_of_reach_speed_mult = 1.4;
     };
 
     static GameVariables g_game_vars;
