@@ -15,8 +15,8 @@ namespace backend {
             double single_starting_mass = 400;
             double single_distance_within_player = 1.5;
             double single_pos_randomization = 0.03;
-            double single_decision_delay = 0.1;
-            double single_decision_delay_variation = 0.3;
+            double single_decision_delay = 0.2;
+            double single_decision_delay_variation = 0.15;
     };
 
     static GameVariables g_game_vars;
@@ -34,7 +34,11 @@ namespace backend {
             g_game_vars.single_starting_mass = value;
         } else if (variable == "single_distance_within_player") {
             g_game_vars.single_distance_within_player = value;
-        } else if (variable == "pos_randomization") {
+        } else if (variable == "single_decision_delay") {
+            g_game_vars.single_decision_delay = value;
+        } else if (variable == "single_decision_delay_variation") {
+            g_game_vars.single_decision_delay_variation = value;
+        }  else if (variable == "pos_randomization") {
             g_game_vars.single_pos_randomization = value;
         }
     }

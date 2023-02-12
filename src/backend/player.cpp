@@ -16,7 +16,7 @@ namespace backend {
 
     Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, SingleStats& single_stats, RNG& rng) :
         faction_id_(faction_id), rng_(rng) {
-        main_single_ = std::make_unique<Single>(single_id, faction_id, position, mass, radius, single_stats);
+        main_single_ = std::make_unique<Single>(single_id, faction_id, position, mass, radius, single_stats, rng);
     }
 
     void Player::UpdateIntention(double time_delta) {

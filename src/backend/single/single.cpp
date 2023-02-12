@@ -6,6 +6,7 @@
 #include "../../utils/math_utils.h"
 #include "../../utils/move_utils.h"
 #include "../point.h"
+#include "../variables.h"
 
 namespace backend {
     namespace  {
@@ -20,8 +21,10 @@ namespace backend {
         constexpr double kOutOfReachSpeedMultiplier = 1.4;
     }
 
-    Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats) : 
-        id_(id), faction_id_(faction_id), p_(position), single_state_(SingleState::STANDING), single_stats_(single_stats), mass_(mass), radius_(radius) {
+    Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats, RNG& rng) : 
+        id_(id), faction_id_(faction_id), p_(position), single_state_(SingleState::STANDING), 
+        single_stats_(single_stats), mass_(mass), radius_(radius), rng_(rng) {
+        decision_delay_ = 0;
         goal_p_ = p_;
         angle_ = 0;
     }
@@ -80,12 +83,19 @@ namespace backend {
             return;
         }
 
-        // If potentially overshooting, move towards
+        // If potentially overshooting, just move toward the goal
+        // TODO: This condition probably causes some really weird behavior.
         Vector2 dv = v_ * time_delta;
         if (goal_p_.x - p_.x < abs(dv.x) && abs(goal_p_.y - p_.y) < abs(dv.y)) {
             p_ = goal_p_;
         } else {
             p_ = p_ + v_ * time_delta;
+        }
+        
+        // Decrement decision delay
+        decision_delay_ -= time_delta;
+        if (decision_delay_ > 0) {
+            decision_delay_ = 0;
         }
     }
 
@@ -97,6 +107,9 @@ namespace backend {
 
     void Single::SetGoalPosition(Vector2 p) {
         goal_p_ = p;
+        decision_delay_ = rng_.RandDouble(
+            g_game_vars.single_decision_delay - g_game_vars.single_decision_delay_variation,
+            g_game_vars.single_decision_delay + g_game_vars.single_decision_delay_variation);
     }
 
     void Single::SwitchFaction(uint32_t faction_id) {

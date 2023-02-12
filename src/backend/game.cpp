@@ -31,7 +31,7 @@ namespace backend {
             Vector2 random_position = {rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_)};
             auto single = std::make_unique<Single>(
                 GetUniqueSingleId(), neutral_faction_id_, random_position, 
-                g_game_vars.single_starting_mass, g_game_vars.single_radius, universal_single_stats_);
+                g_game_vars.single_starting_mass, g_game_vars.single_radius, universal_single_stats_, rng_);
             auto single_ptr = single.get();
             available_singles_[single.get()] = std::move(single);
             position_hasher_.AddSingle(single_ptr);

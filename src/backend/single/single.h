@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#include "../rng.h"
 #include "../point.h"
 #include "single_state.h"
 #include "single_stats.h"
@@ -9,7 +10,7 @@
 namespace backend {
     class Single {
         public:
-            Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats_);
+            Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats_, RNG& rng);
 
             // Update the intention of the single
             void UpdateIntention(double time_delta);
@@ -50,6 +51,7 @@ namespace backend {
 
             // Current state
             SingleState single_state_;
+            double decision_delay_;
 
             // Size
             double radius_;
@@ -66,5 +68,8 @@ namespace backend {
             // Goal of the players
             Vector2 goal_p_;
             double goal_speed_;
+
+            // RNG for decision making
+            RNG& rng_;
     };
 }
