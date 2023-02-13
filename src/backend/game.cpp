@@ -7,7 +7,6 @@
 #include "game.h"
 #include "player.h"
 #include "variables.h"
-#include "single/single_stats.h"
 #include "../utils/math_utils.h"
 
 namespace backend {

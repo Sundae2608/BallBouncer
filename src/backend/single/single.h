@@ -4,8 +4,8 @@
 
 #include "../rng.h"
 #include "../point.h"
+#include "../variables.h"
 #include "state.h"
-#include "single_stats.h"
 
 namespace backend {
     class Single {

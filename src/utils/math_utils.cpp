@@ -31,6 +31,14 @@ namespace math_utils {
     double Distance(backend::Vector2 p1, backend::Vector2 p2) {
         return sqrt((p2 - p1).SquareMagnitude());
     }
+    
+    bool IsBetween(backend::Vector2 a, backend::Vector2 b, backend::Vector2 p) {
+        double ap = Distance(a, p);
+        double bp = Distance(b, p);
+        double ab = Distance(a, b);
+
+        return abs(ab - bp - ap) < kEpslilon;
+    }
 
     bool LineCircleIntersection(backend::Vector2 p1, backend::Vector2 p2, backend::Vector2 center, double radius) {
         double dx = p2.x - p1.x;

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "single/single_stats.h"
+#include "variables.h"
 
 namespace backend {
     struct GameConfig {

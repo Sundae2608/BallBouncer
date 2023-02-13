@@ -6,6 +6,7 @@
 #include "point.h"
 #include "rng.h"
 #include "single/single.h"
+#include "single/unit.h"
 
 namespace backend {
     class Player {
@@ -42,9 +43,7 @@ namespace backend {
 
             // Main single controlled by the player
             std::unique_ptr<Single> main_single_;
-
-            // Other single controlled by the player
-            std::vector<Single*> member_singles_;
+            std::unique_ptr<Unit> unit_;
 
             // RNG
             RNG& rng_;

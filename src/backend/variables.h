@@ -3,26 +3,34 @@
 #include <string>
 
 namespace backend {
-    class GameVariables {
-        public:
-            // Player variables
-            double player_radius = 2;
-            double player_starting_mass = 800;
-            double player_eating_mass_ratio = 0.5;
 
-            // Single variables within the player
-            double single_radius = 1.58;
-            double single_starting_mass = 400;
-            double single_distance_within_player = 1.5;
-            double single_pos_randomization = 0.03;
-            double single_decision_delay = 0.2;
-            double single_decision_delay_variation = 0.15;
-            double single_standing_dist = 0.1;
-            double single_out_of_reach_coef = 5;
-            double single_out_of_reach_speed_mult = 1.4;
+    struct SingleStats {
+        double speed;
+        double acceleration;
+        double rotation_speed;
+    };
+
+    struct GameVariables {
+        // Player variables
+        double player_radius = 2;
+        double player_starting_mass = 800;
+        double player_eating_mass_ratio = 0.5;
+
+        // Single variables within the player
+        double single_radius = 1.58;
+        double single_starting_mass = 400;
+        double single_distance_within_player = 1.5;
+        double single_pos_randomization = 0.03;
+        double single_decision_delay = 0.2;
+        double single_decision_delay_variation = 0.15;
+        double single_standing_dist = 0.1;
+        double single_out_of_reach_coef = 5;
+        double single_out_of_reach_speed_mult = 1.4;
     };
 
     static GameVariables g_game_vars;
+
+    static SingleStats g_single_stats;
     
     static void ModifyVariable(std::string variable, double value) {
         if (variable == "player_radius") {

@@ -13,7 +13,7 @@
 #include "configs.h"
 #include "player.h"
 #include "rng.h"
-#include "single/single_stats.h"
+#include "variables.h"
 
 namespace backend {
     class Game {
