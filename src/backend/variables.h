@@ -5,9 +5,9 @@
 namespace backend {
 
     struct SingleStats {
-        double speed;
-        double acceleration;
-        double rotation_speed;
+        double speed = 30;
+        double acceleration = 150;
+        double rotation_speed = 20;
     };
 
     struct GameVariables {
@@ -26,6 +26,9 @@ namespace backend {
         double single_standing_dist = 0.1;
         double single_out_of_reach_coef = 5;
         double single_out_of_reach_speed_mult = 1.4;
+
+        // Unit variables
+        double unit_standing_dist = 0.1;
     };
 
     static GameVariables g_game_vars;

@@ -47,7 +47,7 @@ namespace backend {
                 break;
             case SingleState::SINGLE_ROTATING:
                 // Rotate the angle
-                goal_speed_= speed_;
+                goal_speed_= 0;
                 move_utils::RotateAngle(&angle_, toward_angle, single_stats_.rotation_speed * time_delta);
                 if (distance_to_goal > g_game_vars.single_standing_dist) {
                     if (math_utils::DoubleEqual(angle_, toward_angle, 1e-1)) {
@@ -72,7 +72,6 @@ namespace backend {
         }
 
         // If potentially overshooting, just move toward the goal
-        // TODO: This condition probably causes some really weird behavior.
         Vector2 dv = v_ * time_delta;
         if (math_utils::IsBetween(p_, p_ + dv, goal_p_)) {
             p_ = goal_p_;

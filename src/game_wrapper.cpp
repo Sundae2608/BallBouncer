@@ -105,11 +105,7 @@ GameWrapper::GameWrapper(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Game
   game_config.seed = seed;
   game_config.num_available_singles = num_singles;
 
-  backend::SingleStats stats;
-  stats.speed = 30;
-  stats.acceleration = 150.0;
-  stats.rotation_speed = 20;
-  game_config.single_stats = stats;
+  game_config.single_stats = backend::g_single_stats;
 
   backend::HashingConfig hashing_config;
   hashing_config.x_div = 50.0;
