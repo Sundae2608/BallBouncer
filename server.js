@@ -27,10 +27,10 @@ io.on('connection', connected);
 // Backend initialization
 const game_wrapper = require('./build/Release/game_wrapper.node')
 var gameInstance = new game_wrapper.GameWrapper(
-    /*xl=*/ -200,
-    /*xu=*/ 200,
-    /*yl=*/ -200,
-    /*yu=*/ 200,
+    /*xl=*/ -100,
+    /*xu=*/ 100,
+    /*yl=*/ -100,
+    /*yu=*/ 100,
     /*seed=*/ 42,
     /*num_available_singles=*/ 300
 );
@@ -38,6 +38,7 @@ var gameInstance = new game_wrapper.GameWrapper(
 var playerCreations = [];
 var playerDestructions = [];
 var playerMoves = [];
+var playerAttacks = [];
 
 var players = {};
 
@@ -58,6 +59,15 @@ function connected(socket) {
         playerId: socket.id,
         x: moveData.x,
         y: moveData.y
+      }
+    );
+  });
+  
+  socket.on('attack', playerId => {
+    playerAttacks.push(
+      {
+        playerId1: socket.id,
+        playerId2: playerId
       }
     );
   });
@@ -85,6 +95,10 @@ function serverLoop() {
     gameInstance.Move(data.playerId, data.x, data.y);
   }
   playerMoves = [];
+  for (let data of playerAttacks) {
+    gameInstance.PlayerAttackPlayer(data.playerId1, data.playerId2);
+  }
+  playerAttacks = [];
 
   // Game update
   currTime = Date.now();

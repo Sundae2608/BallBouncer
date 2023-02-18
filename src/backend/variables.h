@@ -4,10 +4,13 @@
 
 namespace backend {
 
-    struct SingleStats {
+    struct CombatStats {
         double speed = 30;
         double acceleration = 150;
         double rotation_speed = 20;
+
+        double speed_in_combat = 16;
+        double shooting_distance = 400;
     };
 
     struct GameVariables {
@@ -33,7 +36,7 @@ namespace backend {
 
     static GameVariables g_game_vars;
 
-    static SingleStats g_single_stats;
+    static CombatStats g_combat_stats;
     
     static void ModifyVariable(std::string variable, double value) {
         if (variable == "player_radius") {

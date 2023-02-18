@@ -212,6 +212,8 @@ casterMarker.position.y = 0;
 casterMarker.position.z = 0;
 
 var movePosition = null;
+var pointingPlayerId = null;
+
 const pointer = new THREE.Vector2();
 function onPointerMove(event) {
 	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -223,7 +225,11 @@ function onPointerDown(event) {
     // Move if it is a right click
     if (event.button == 2) {
         rightClickSound.play();
-        if (movePosition !== null) {
+        if (pointingPlayerId != null) {
+            socket.emit('attack', pointingPlayerId);
+            console.log("Attack");
+        }
+        else if (movePosition !== null) {
             socket.emit('move', movePosition);
         }
     } else if (event.button == 0) {
@@ -290,7 +296,9 @@ function animate() {
     let intersects = [];
     intersects = raycaster.intersectObjects(clickableSingles);
     if (intersects.length > 0) {
-        // console.log(clickableSinglesToPlayerId[intersects[0].object.uuid]);
+        pointingPlayerId = clickableSinglesToPlayerId[intersects[0].object.uuid];
+    } else {
+        pointingPlayerId = null;
     }
 
     // Raycaster to find the clicking

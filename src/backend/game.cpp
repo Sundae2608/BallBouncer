@@ -16,7 +16,7 @@ namespace backend {
         yl_(game_config.yl), 
         yu_(game_config.yu), 
         rng_(game_config.seed),
-        universal_single_stats_(game_config.single_stats),
+        universal_combat_stats_(game_config.combat_stats),
         position_hasher_(hashing_config.x_div, hashing_config.y_div),
         boids_manager_(position_hasher_),
         collision_manager_(position_hasher_) {
@@ -30,7 +30,7 @@ namespace backend {
             Vector2 random_position = {rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_)};
             auto single = std::make_unique<Single>(
                 GetUniqueSingleId(), neutral_faction_id_, random_position, 
-                g_game_vars.single_starting_mass, g_game_vars.single_radius, universal_single_stats_, rng_);
+                g_game_vars.single_starting_mass, g_game_vars.single_radius, universal_combat_stats_, rng_);
             auto single_ptr = single.get();
             available_singles_[single.get()] = std::move(single);
             position_hasher_.AddSingle(single_ptr);
@@ -77,7 +77,7 @@ namespace backend {
             Vector2 random_position = {rng_.RandDouble(xl_, xu_), rng_.RandDouble(yl_, yu_)};
             player_map_[player_id] = std::make_unique<Player>(
                 GetUniqueSingleId(), GetUniqueFactionId(), random_position, 
-                g_game_vars.player_starting_mass, g_game_vars.player_radius, universal_single_stats_, rng_);
+                g_game_vars.player_starting_mass, g_game_vars.player_radius, universal_combat_stats_, rng_);
             position_hasher_.AddSingle(player_map_[player_id].get()->GetSingle());
         }
     }

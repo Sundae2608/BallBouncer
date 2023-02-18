@@ -83,6 +83,6 @@ namespace backend {
             RNG rng_;
 
             // Single stats
-            SingleStats universal_single_stats_;
+            CombatStats universal_combat_stats_;
     };
 }  // namespace backend

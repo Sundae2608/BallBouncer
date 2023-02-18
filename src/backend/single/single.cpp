@@ -9,9 +9,9 @@
 #include "../variables.h"
 
 namespace backend {
-    Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats, RNG& rng) : 
+    Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng) : 
         id_(id), faction_id_(faction_id), p_(position), single_state_(SingleState::SINGLE_STANDING), 
-        single_stats_(single_stats), mass_(mass), radius_(radius), rng_(rng) {
+        combat_stats_(combat_stats), mass_(mass), radius_(radius), rng_(rng) {
         decision_delay_ = 0;
         goal_p_ = p_;
         angle_ = 0;
@@ -20,9 +20,9 @@ namespace backend {
     void Single::UpdateIntention(double time_delta) {
         // Change the speed of the single
         if (speed_ < goal_speed_) {
-            speed_ = std::min(goal_speed_, speed_ + single_stats_.acceleration * time_delta);
+            speed_ = std::min(goal_speed_, speed_ + combat_stats_.acceleration * time_delta);
         } else {
-            speed_ = std::max(goal_speed_, speed_ - single_stats_.acceleration * time_delta);
+            speed_ = std::max(goal_speed_, speed_ - combat_stats_.acceleration * time_delta);
         }
 
         // Update based on states
@@ -38,7 +38,7 @@ namespace backend {
                 }
                 break;
             case SingleState::SINGLE_MOVING:
-                goal_speed_ = single_stats_.speed;
+                goal_speed_ = combat_stats_.speed;
                 if (!math_utils::DoubleEqual(angle_, toward_angle, 1e-1) && distance_to_goal > g_game_vars.single_standing_dist) {
                     SwitchSingleState(SingleState::SINGLE_ROTATING);
                 } else if (distance_to_goal < g_game_vars.single_standing_dist) {
@@ -48,7 +48,7 @@ namespace backend {
             case SingleState::SINGLE_ROTATING:
                 // Rotate the angle
                 goal_speed_= 0;
-                move_utils::RotateAngle(&angle_, toward_angle, single_stats_.rotation_speed * time_delta);
+                move_utils::RotateAngle(&angle_, toward_angle, combat_stats_.rotation_speed * time_delta);
                 if (distance_to_goal > g_game_vars.single_standing_dist) {
                     if (math_utils::DoubleEqual(angle_, toward_angle, 1e-1)) {
                         SwitchSingleState(SingleState::SINGLE_MOVING);

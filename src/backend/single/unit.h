@@ -10,16 +10,23 @@
 namespace backend {
     class Unit {
         public:
-            Unit(Vector2 position, const SingleStats& single_stats, RNG& rng);
+            Unit(Vector2 position, const CombatStats& combat_stats, RNG& rng);
 
             // Set the goal position of the unit
             void SetGoalPosition(Vector2 goal_p);
+
+            // Get position
+            Vector2 GetPosition();
 
             // Update intention
             void UpdateIntention(double time_delta);
 
             // Obtain single
             void ObtainSingle(Single* single);
+
+            // Attack the unit
+            void AttackUnit(Unit* unit);
+            void Disengage();
 
             // Get member singles
             const std::vector<Single*> GetMemberSingles() const;
@@ -28,7 +35,7 @@ namespace backend {
             void SwitchUnitState(UnitState unit_state);
 
             // Stats of the single
-            const SingleStats& single_stats_;
+            const CombatStats& combat_stats_;
 
             // Singles that are under the Unit management
             std::vector<Single*> member_singles_;
@@ -41,6 +48,7 @@ namespace backend {
             UnitState unit_state_;
             Vector2 p_;
             Vector2 v_;
+            Unit* engaging_unit_;
 
             // Goal variables
             Vector2 goal_p_;

@@ -67,6 +67,9 @@ Napi::Object GameWrapper::Init(Napi::Env env, Napi::Object exports) {
 
     // Update tuning variables
     InstanceMethod("NodifyVariable", &GameWrapper::ModifyVariable),
+
+    // Player attack player
+    InstanceMethod("PlayerAttackPlayer", &GameWrapper::PlayerAttackPlayer),
   });
 
   constructor = Napi::Persistent(func);
@@ -105,7 +108,7 @@ GameWrapper::GameWrapper(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Game
   game_config.seed = seed;
   game_config.num_available_singles = num_singles;
 
-  game_config.single_stats = backend::g_single_stats;
+  game_config.combat_stats = backend::g_combat_stats;
 
   backend::HashingConfig hashing_config;
   hashing_config.x_div = 50.0;
@@ -154,7 +157,7 @@ void GameWrapper::Move(const Napi::CallbackInfo& info) {
         Napi::TypeError::New(env, "Player ID not found").ThrowAsJavaScriptException();
     }
         
-    return player_or.value()->SetGoalPosition({x.DoubleValue(), y.DoubleValue()});
+    return player_or.value()->MoveTo({x.DoubleValue(), y.DoubleValue()});
 }
 
 void GameWrapper::Update(const Napi::CallbackInfo& info) {
@@ -280,6 +283,25 @@ void GameWrapper::ModifyVariable(const Napi::CallbackInfo& info) {
     auto variable = info[0].As<Napi::String>();
     auto value = info[1].As<Napi::Number>();
     backend::ModifyVariable(variable, value);
+}
+
+void GameWrapper::PlayerAttackPlayer(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 2 && !info[0].IsString() && !info[1].IsString()) {
+        Napi::TypeError::New(env, "Function argument PlayerAttackPlayer(string player1_id, string player2_id) expected").ThrowAsJavaScriptException();
+    }
+    auto player1_id = info[0].As<Napi::String>();
+    auto player2_id = info[1].As<Napi::String>();
+    auto player1_or = game_instance_->GetPlayer(player1_id);
+    auto player2_or = game_instance_->GetPlayer(player2_id);
+    if (!player1_or.has_value()) {
+        Napi::TypeError::New(env, "Player ID 1 not found").ThrowAsJavaScriptException();
+    }
+    if (!player2_or.has_value()) {
+        Napi::TypeError::New(env, "Player ID 2 not found").ThrowAsJavaScriptException();
+    }
+    player1_or.value()->AttackPlayer(player2_or.value());
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {

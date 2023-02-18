@@ -10,7 +10,7 @@
 namespace backend {
     class Single {
         public:
-            Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const SingleStats& single_stats_, RNG& rng);
+            Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng);
 
             // Update the intention of the single
             void UpdateIntention(double time_delta);
@@ -47,7 +47,7 @@ namespace backend {
             void SwitchSingleState(SingleState state);
 
             // Stats
-            const SingleStats& single_stats_;
+            const CombatStats& combat_stats_;
 
             // Current state
             SingleState single_state_;

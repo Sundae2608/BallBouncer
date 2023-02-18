@@ -18,8 +18,8 @@ namespace backend {
             }
         }
     }
-    Unit::Unit(Vector2 position, const SingleStats& single_stats, RNG& rng) : 
-        p_(position), goal_p_(position), single_stats_(single_stats), rng_(rng){
+    Unit::Unit(Vector2 position, const CombatStats& combat_stats, RNG& rng) : 
+        p_(position), goal_p_(position), combat_stats_(combat_stats), rng_(rng){
             unit_state_ = UnitState::UNIT_STANDING;
         }
 
@@ -27,30 +27,73 @@ namespace backend {
         goal_p_ = goal_p;
     }
 
+    Vector2 Unit::GetPosition() {
+        // TODO: We can calculate the average position for better perception of the unit center, rather than actual unit center.
+        // However, it is good enough to use the center for the time being.
+        return p_;
+    }
+
     void Unit::SwitchUnitState(UnitState unit_state) {
         unit_state_ = unit_state;
     }
 
+    void Unit::AttackUnit(Unit* unit) {
+        std::cout << "Attack unit";
+        engaging_unit_ = unit;
+        if (engaging_unit_ != nullptr) {
+            SwitchUnitState(UnitState::UNIT_ENGAGING);
+        }
+    }
+
+    void Unit::Disengage() {
+        engaging_unit_ = nullptr;
+        SwitchUnitState(UnitState::UNIT_STANDING);
+    }
+
     void Unit::UpdateIntention(double time_delta) {
         // Based on state, perform the movement of the unit.
-        double distance_to_goal = math_utils::Distance(p_, goal_p_);
-        double toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+        if (unit_state_ == UnitState::UNIT_ENGAGING && unit_state_ == UnitState::UNIT_MOVING_TO_ENGAGE && engaging_unit_ != nullptr) {
+            goal_p_ = engaging_unit_->GetPosition();
+        }
+        double distance_to_goal;
+        double toward_angle;
 
         // State switching based on position
         switch (unit_state_) {
             case UnitState::UNIT_STANDING:
+                distance_to_goal = math_utils::Distance(p_, goal_p_);
+                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
                 if (distance_to_goal > g_game_vars.unit_standing_dist) {
                     SwitchUnitState(UnitState::UNIT_MOVING);
                 }
                 break;
             case UnitState::UNIT_MOVING:
+                distance_to_goal = math_utils::Distance(p_, goal_p_);
+                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
                 if (distance_to_goal < g_game_vars.unit_standing_dist) {
                     SwitchUnitState(UnitState::UNIT_STANDING);
+                }
+                break;
+            case UnitState::UNIT_MOVING_TO_ENGAGE:
+                distance_to_goal = math_utils::Distance(p_, goal_p_);
+                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                goal_p_ = engaging_unit_->GetPosition();
+                if (distance_to_goal < combat_stats_.shooting_distance) {
+                    SwitchUnitState(UnitState::UNIT_ENGAGING);
+                }
+                break;
+            case UnitState::UNIT_ENGAGING:
+                distance_to_goal = math_utils::Distance(p_, goal_p_);
+                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                goal_p_ = engaging_unit_->GetPosition();
+                if (distance_to_goal > combat_stats_.shooting_distance) {
+                    SwitchUnitState(UnitState::UNIT_MOVING_TO_ENGAGE);
                 }
                 break;
         }
 
         // Perform action based on state.
+        Vector2 dv;
         switch (unit_state_) {
             case UnitState::UNIT_STANDING:
                 break;
@@ -60,8 +103,36 @@ namespace backend {
                 CalculatePositionOffset(position_offsets_, member_singles_.size(), rng_);
 
                 // Move towards the goal position
-                v_ = {cos(toward_angle) * single_stats_.speed, sin(toward_angle) * single_stats_.speed};
-                Vector2 dv = v_ * time_delta;
+                v_ = {cos(toward_angle) * combat_stats_.speed, sin(toward_angle) * combat_stats_.speed};
+                dv = v_ * time_delta;
+                if (math_utils::IsBetween(p_, p_ + dv, goal_p_)) {
+                    p_ = goal_p_;
+                } else {
+                    p_ = p_ + dv;
+                }
+                break;
+            case UnitState::UNIT_MOVING_TO_ENGAGE:
+                // Wiggle the singles in the formation to simulate the randomness in walking the formation.
+                position_offsets_.clear();
+                CalculatePositionOffset(position_offsets_, member_singles_.size(), rng_);
+
+                // Move towards the goal position
+                v_ = {cos(toward_angle) * combat_stats_.speed, sin(toward_angle) * combat_stats_.speed};
+                dv = v_ * time_delta;
+                if (math_utils::IsBetween(p_, p_ + dv, goal_p_)) {
+                    p_ = goal_p_;
+                } else {
+                    p_ = p_ + dv;
+                }
+                break;
+            case UnitState::UNIT_ENGAGING:
+                // Wiggle the singles in the formation to simulate the randomness in walking the formation.
+                position_offsets_.clear();
+                CalculatePositionOffset(position_offsets_, member_singles_.size(), rng_);
+
+                // Move towards the goal position
+                v_ = {cos(toward_angle) * combat_stats_.speed_in_combat, sin(toward_angle) * combat_stats_.speed_in_combat};
+                dv = v_ * time_delta;
                 if (math_utils::IsBetween(p_, p_ + dv, goal_p_)) {
                     p_ = goal_p_;
                 } else {

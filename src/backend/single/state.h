@@ -12,6 +12,7 @@ namespace backend {
     enum UnitState {
         UNIT_STANDING = 0,
         UNIT_MOVING = 1,
-        UNIT_ENGAGING = 2
+        UNIT_MOVING_TO_ENGAGE = 2,
+        UNIT_ENGAGING = 3,
     };
 }

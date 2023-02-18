@@ -19,7 +19,7 @@ namespace backend {
         int num_available_singles;
 
         // Universal single stats
-        SingleStats single_stats;  
+        CombatStats combat_stats;  
     };
 
     struct HashingConfig {
