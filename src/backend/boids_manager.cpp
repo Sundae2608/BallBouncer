@@ -2,7 +2,7 @@
 #include "position_hasher.h"
 #include "single/single.h"
 
-#include "../utils/math_utils.h"
+#include "utils/math_utils.h"
 
 namespace backend {
     namespace {

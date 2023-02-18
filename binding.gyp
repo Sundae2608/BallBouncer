@@ -24,8 +24,8 @@
         "./src/backend/rng.cpp",
         "./src/backend/single/single.cpp",
         "./src/backend/single/unit.cpp",
-        "./src/utils/math_utils.cpp",
-        "./src/utils/move_utils.cpp",
+        "./src/backend/utils/math_utils.cpp",
+        "./src/backend/utils/move_utils.cpp",
       ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")"

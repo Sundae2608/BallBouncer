@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../backend/point.h"
+#include "../point.h"
 #include "math_utils.h"
 
 namespace backend {

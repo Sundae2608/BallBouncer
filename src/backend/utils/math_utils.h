@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../backend/point.h"
+#include "../point.h"
 
 namespace backend {
     namespace math_utils {

@@ -1,6 +1,6 @@
 #include "point.h"
 #include "position_hasher.h"
-#include "../utils/math_utils.h"
+#include "utils/math_utils.h"
 
 #include <iostream>
 #include <utility>

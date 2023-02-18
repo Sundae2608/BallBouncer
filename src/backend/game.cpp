@@ -7,7 +7,7 @@
 #include "game.h"
 #include "player.h"
 #include "variables.h"
-#include "../utils/math_utils.h"
+#include "utils/math_utils.h"
 
 namespace backend {
     Game::Game(const GameConfig& game_config, const HashingConfig& hashing_config) : 

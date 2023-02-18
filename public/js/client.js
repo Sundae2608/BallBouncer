@@ -19,6 +19,15 @@ const randomColor = (() => {
     };
   })();
 
+
+// Object set up
+let selfID;
+let playerObjects = {};
+let singleObjects = {};
+let clickableSingles = [];
+let clickableSinglesToPlayerId = {};
+let playerColorMap = {};
+
 function processPlayerData(playerData, playerObjects, playersFound, playerColorMap, scene) {
     for (let playerId in playerData) {
         playersFound[playerId] = true;
@@ -36,8 +45,10 @@ function processPlayerData(playerData, playerObjects, playersFound, playerColorM
             obj.castShadow = true;
             scene.add(obj);
             playerObjects[playerId] = obj;
+            clickableSingles.push(obj)
         }
         let playerObject = playerObjects[playerId];
+        clickableSinglesToPlayerId[playerObject.uuid] = playerId;
         playerObject.scale.setScalar(radius / 2);
         playerObject.position.x = pos[0];
         playerObject.position.y = pos[1];
@@ -66,8 +77,10 @@ function processSingleData(singlesData, singleObjects, singlesFound, playerColor
             obj.castShadow = true;
             scene.add(obj);
             singleObjects[singleId] = obj;
+            clickableSingles.push(obj)
         }
         let singleObject = singleObjects[singleId];
+        clickableSinglesToPlayerId[singleObject.uuid] = playerId;
         singleObject.position.x = singlePosition[0];
         singleObject.position.y = singlePosition[1];
         singleObject.position.z = 1.58 / 2;
@@ -224,12 +237,6 @@ window.addEventListener('contextmenu', event => {event.preventDefault()});
 const stats = Stats()
 document.body.append(stats.domElement)
 
-// Object set up
-let selfID;
-let playerObjects = {};
-let singleObjects = {};
-let playerColorMap = {};
-
 // Socket setup
 const socket = io.connect('http://localhost:3000');
 
@@ -272,7 +279,7 @@ var lastTime = Date.now();
 function animate() {
     requestAnimationFrame( animate );
     
-    // Raycaster
+    // Raycaster to find the click point
     raycaster.setFromCamera( pointer, camera );
     const intersect = raycaster.intersectObject(box);
     if (intersect !== null) {
@@ -280,6 +287,13 @@ function animate() {
         casterMarker.position.y = intersect[0].point.y;
         movePosition = {x: intersect[0].point.x, y: intersect[0].point.y}
     }
+    let intersects = [];
+    intersects = raycaster.intersectObjects(clickableSingles);
+    if (intersects.length > 0) {
+        // console.log(clickableSinglesToPlayerId[intersects[0].object.uuid]);
+    }
+
+    // Raycaster to find the clicking
     let currTime = Date.now();
     let timeDelta = (currTime - lastTime) / 1000;
 

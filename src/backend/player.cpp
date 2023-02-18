@@ -2,7 +2,7 @@
 #include "variables.h"
 #include "single/single.h"
 #include "single/unit.h"
-#include "../utils/math_utils.h"
+#include "utils/math_utils.h"
 
 #include <math.h>
 #include <random>

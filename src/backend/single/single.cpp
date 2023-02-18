@@ -3,8 +3,8 @@
 #include <math.h>
 
 #include "single.h"
-#include "../../utils/math_utils.h"
-#include "../../utils/move_utils.h"
+#include "../utils/math_utils.h"
+#include "../utils/move_utils.h"
 #include "../point.h"
 #include "../variables.h"
 
