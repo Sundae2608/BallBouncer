@@ -9,8 +9,8 @@ namespace backend {
         double acceleration = 150;
         double rotation_speed = 20;
 
-        double speed_in_combat = 16;
-        double shooting_distance = 400;
+        double speed_in_combat = 15;
+        double shooting_distance = 50;
     };
 
     struct GameVariables {

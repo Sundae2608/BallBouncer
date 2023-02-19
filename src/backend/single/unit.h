@@ -4,13 +4,15 @@
 
 #include "../point.h"
 #include "../variables.h"
+#include "../player.h"
 #include "single.h"
 #include "state.h"
 
 namespace backend {
+    class Player;
     class Unit {
         public:
-            Unit(Vector2 position, const CombatStats& combat_stats, RNG& rng);
+            Unit(Vector2 position, const Player& player, const CombatStats& combat_stats, RNG& rng);
 
             // Set the goal position of the unit
             void SetGoalPosition(Vector2 goal_p);
@@ -38,6 +40,7 @@ namespace backend {
             const CombatStats& combat_stats_;
 
             // Singles that are under the Unit management
+            const Player& player_;
             std::vector<Single*> member_singles_;
 
             // Offset position of each member, compared to the center of the unit.

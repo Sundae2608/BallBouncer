@@ -23,6 +23,7 @@
         "./src/backend/player.cpp",
         "./src/backend/rng.cpp",
         "./src/backend/single/single.cpp",
+        "./src/backend/single/single_formation.cpp",
         "./src/backend/single/unit.cpp",
         "./src/backend/utils/math_utils.cpp",
         "./src/backend/utils/move_utils.cpp",

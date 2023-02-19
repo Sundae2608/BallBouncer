@@ -27,10 +27,10 @@ io.on('connection', connected);
 // Backend initialization
 const game_wrapper = require('./build/Release/game_wrapper.node')
 var gameInstance = new game_wrapper.GameWrapper(
-    /*xl=*/ -100,
-    /*xu=*/ 100,
-    /*yl=*/ -100,
-    /*yu=*/ 100,
+    /*xl=*/ -200,
+    /*xu=*/ 200,
+    /*yl=*/ -200,
+    /*yu=*/ 200,
     /*seed=*/ 42,
     /*num_available_singles=*/ 300
 );

@@ -4,6 +4,7 @@
 #include "../point.h"
 #include "../variables.h"
 #include "../utils/math_utils.h"
+#include "../player.h"
 #include "single.h"
 #include "unit.h"
 
@@ -18,8 +19,9 @@ namespace backend {
             }
         }
     }
-    Unit::Unit(Vector2 position, const CombatStats& combat_stats, RNG& rng) : 
-        p_(position), goal_p_(position), combat_stats_(combat_stats), rng_(rng){
+
+    Unit::Unit(Vector2 position, const Player& player, const CombatStats& combat_stats, RNG& rng) : 
+        p_(position), goal_p_(position), player_(player), combat_stats_(combat_stats), rng_(rng){
             unit_state_ = UnitState::UNIT_STANDING;
         }
 
@@ -38,7 +40,6 @@ namespace backend {
     }
 
     void Unit::AttackUnit(Unit* unit) {
-        std::cout << "Attack unit";
         engaging_unit_ = unit;
         if (engaging_unit_ != nullptr) {
             SwitchUnitState(UnitState::UNIT_ENGAGING);
@@ -52,8 +53,10 @@ namespace backend {
 
     void Unit::UpdateIntention(double time_delta) {
         // Based on state, perform the movement of the unit.
-        if (unit_state_ == UnitState::UNIT_ENGAGING && unit_state_ == UnitState::UNIT_MOVING_TO_ENGAGE && engaging_unit_ != nullptr) {
+        if ((unit_state_ == UnitState::UNIT_ENGAGING || unit_state_ == UnitState::UNIT_MOVING_TO_ENGAGE) && engaging_unit_ != nullptr) {
             goal_p_ = engaging_unit_->GetPosition();
+        } else {
+            goal_p_ = player_.GetPosition();
         }
         double distance_to_goal;
         double toward_angle;

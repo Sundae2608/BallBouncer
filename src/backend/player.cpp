@@ -15,7 +15,7 @@ namespace backend {
     Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, CombatStats& combat_stats, RNG& rng) :
         faction_id_(faction_id), rng_(rng) {
         main_single_ = std::make_unique<Single>(single_id, faction_id, position, mass, radius, combat_stats, rng);
-        unit_ = std::make_unique<Unit>(position, combat_stats, rng);
+        unit_ = std::make_unique<Unit>(position, *this, combat_stats, rng);
     }
 
     void Player::UpdateIntention(double time_delta) {
@@ -23,7 +23,6 @@ namespace backend {
         main_single_->UpdateIntention(time_delta);
 
         // Update the intention of each unit
-        unit_->SetGoalPosition(main_single_->GetPosition());
         unit_->UpdateIntention(time_delta);
     }
 
@@ -51,7 +50,6 @@ namespace backend {
             // Self attacking is invalid
             return;
         }
-        std::cout << "Attacking player";
         engaging_player_ = player;
         unit_->AttackUnit(player->GetUnit());
     }
