@@ -8,6 +8,7 @@
 #include "state.h"
 
 namespace backend {
+    class Unit;
     class Single {
         public:
             Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng);
@@ -20,6 +21,9 @@ namespace backend {
 
             // Change the faction the single belongs to
             void SwitchFaction(uint32_t faction_id);
+
+            // Change the governing unit of the single
+            void SwitchGoverningUnit(Unit* unit);
 
             // Gain mass
             void GainMass(double added_mass);
@@ -48,6 +52,9 @@ namespace backend {
 
             // Stats
             const CombatStats& combat_stats_;
+
+            // Current governing unit
+            Unit* governing_unit_;
 
             // Current state
             SingleState single_state_;

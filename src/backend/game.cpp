@@ -141,6 +141,7 @@ namespace backend {
                 if (single->GetFactionId() == neutral_faction_id_) {
                     // Single switched to being under control of the player
                     single->SwitchFaction(player->GetFactionId());
+                    single->SwitchGoverningUnit(player->GetUnit());
                     player->ObtainSingle(single);
                     neutral_singles_.erase(single);
                 }

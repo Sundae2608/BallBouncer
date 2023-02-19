@@ -3,6 +3,8 @@
 #include <math.h>
 
 #include "single.h"
+#include "state.h"
+#include "unit.h"
 #include "../utils/math_utils.h"
 #include "../utils/move_utils.h"
 #include "../point.h"
@@ -12,6 +14,7 @@ namespace backend {
     Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng) : 
         id_(id), faction_id_(faction_id), p_(position), single_state_(SingleState::SINGLE_STANDING), 
         combat_stats_(combat_stats), mass_(mass), radius_(radius), rng_(rng) {
+        governing_unit_ = nullptr;
         decision_delay_ = 0;
         goal_p_ = p_;
         angle_ = 0;
@@ -38,7 +41,11 @@ namespace backend {
                 }
                 break;
             case SingleState::SINGLE_MOVING:
-                goal_speed_ = combat_stats_.speed;
+                if (governing_unit_ != nullptr && governing_unit_->GetState() == UnitState::UNIT_ENGAGING) {
+                    goal_speed_ = combat_stats_.speed_in_combat;
+                } else {
+                    goal_speed_ = combat_stats_.speed;
+                }
                 if (!math_utils::DoubleEqual(angle_, toward_angle, 1e-1) && distance_to_goal > g_game_vars.single_standing_dist) {
                     SwitchSingleState(SingleState::SINGLE_ROTATING);
                 } else if (distance_to_goal < g_game_vars.single_standing_dist) {
@@ -101,6 +108,10 @@ namespace backend {
 
     void Single::SwitchFaction(uint32_t faction_id) {
         faction_id_ = faction_id;
+    }
+
+    void Single::SwitchGoverningUnit(Unit* unit) {
+        governing_unit_ = unit;
     }
     
     void Single::GainMass(double added_mass) {

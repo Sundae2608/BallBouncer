@@ -4,7 +4,6 @@
 
 #include "../point.h"
 #include "../variables.h"
-#include "../player.h"
 #include "single.h"
 #include "state.h"
 
@@ -29,6 +28,9 @@ namespace backend {
             // Attack the unit
             void AttackUnit(Unit* unit);
             void Disengage();
+
+            // Whether unit is engaging
+            UnitState GetState();
 
             // Get member singles
             const std::vector<Single*> GetMemberSingles() const;

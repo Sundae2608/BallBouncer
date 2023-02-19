@@ -51,13 +51,11 @@ namespace backend {
         SwitchUnitState(UnitState::UNIT_STANDING);
     }
 
+    UnitState Unit::GetState() {
+        return unit_state_;
+    }
+
     void Unit::UpdateIntention(double time_delta) {
-        // Based on state, perform the movement of the unit.
-        if ((unit_state_ == UnitState::UNIT_ENGAGING || unit_state_ == UnitState::UNIT_MOVING_TO_ENGAGE) && engaging_unit_ != nullptr) {
-            goal_p_ = engaging_unit_->GetPosition();
-        } else {
-            goal_p_ = player_.GetPosition();
-        }
         double distance_to_goal;
 
         // State switching based on position
@@ -65,6 +63,7 @@ namespace backend {
             case UnitState::UNIT_STANDING:
                 distance_to_goal = math_utils::Distance(p_, goal_p_);
                 toward_angle_ = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                goal_p_ = player_.GetPosition();
                 if (distance_to_goal > g_game_vars.unit_standing_dist) {
                     SwitchUnitState(UnitState::UNIT_MOVING);
                 }
@@ -72,6 +71,7 @@ namespace backend {
             case UnitState::UNIT_MOVING:
                 distance_to_goal = math_utils::Distance(p_, goal_p_);
                 toward_angle_ = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                goal_p_ = player_.GetPosition();
                 if (distance_to_goal < g_game_vars.unit_standing_dist) {
                     SwitchUnitState(UnitState::UNIT_STANDING);
                 }
