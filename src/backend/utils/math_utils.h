@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "../point.h"
+#include "../single/single.h"
 
 namespace backend {
     namespace math_utils {
@@ -24,5 +25,8 @@ namespace backend {
 
         // Return the sunflower seed formation based on the radius, number of seeds and the spreading distance
         std::vector<Vector2> GetSunflowerFormation(double radius, int num_seeds, double spreading_distance);
+
+        // Sort singles by angle
+        std::vector<Single*> SortSinglesByAngle(std::vector<Single*> singles, double angle);
     }
 }

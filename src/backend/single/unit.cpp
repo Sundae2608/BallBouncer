@@ -59,27 +59,26 @@ namespace backend {
             goal_p_ = player_.GetPosition();
         }
         double distance_to_goal;
-        double toward_angle;
 
         // State switching based on position
         switch (unit_state_) {
             case UnitState::UNIT_STANDING:
                 distance_to_goal = math_utils::Distance(p_, goal_p_);
-                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                toward_angle_ = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
                 if (distance_to_goal > g_game_vars.unit_standing_dist) {
                     SwitchUnitState(UnitState::UNIT_MOVING);
                 }
                 break;
             case UnitState::UNIT_MOVING:
                 distance_to_goal = math_utils::Distance(p_, goal_p_);
-                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                toward_angle_ = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
                 if (distance_to_goal < g_game_vars.unit_standing_dist) {
                     SwitchUnitState(UnitState::UNIT_STANDING);
                 }
                 break;
             case UnitState::UNIT_MOVING_TO_ENGAGE:
                 distance_to_goal = math_utils::Distance(p_, goal_p_);
-                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                toward_angle_ = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
                 goal_p_ = engaging_unit_->GetPosition();
                 if (distance_to_goal < combat_stats_.shooting_distance) {
                     SwitchUnitState(UnitState::UNIT_ENGAGING);
@@ -87,7 +86,7 @@ namespace backend {
                 break;
             case UnitState::UNIT_ENGAGING:
                 distance_to_goal = math_utils::Distance(p_, goal_p_);
-                toward_angle = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
+                toward_angle_ = atan2(goal_p_.y - p_.y, goal_p_.x - p_.x);
                 goal_p_ = engaging_unit_->GetPosition();
                 if (distance_to_goal > combat_stats_.shooting_distance) {
                     SwitchUnitState(UnitState::UNIT_MOVING_TO_ENGAGE);
@@ -106,7 +105,7 @@ namespace backend {
                 CalculatePositionOffset(position_offsets_, member_singles_.size(), rng_);
 
                 // Move towards the goal position
-                v_ = {cos(toward_angle) * combat_stats_.speed, sin(toward_angle) * combat_stats_.speed};
+                v_ = {cos(toward_angle_) * combat_stats_.speed, sin(toward_angle_) * combat_stats_.speed};
                 dv = v_ * time_delta;
                 if (math_utils::IsBetween(p_, p_ + dv, goal_p_)) {
                     p_ = goal_p_;
@@ -120,7 +119,7 @@ namespace backend {
                 CalculatePositionOffset(position_offsets_, member_singles_.size(), rng_);
 
                 // Move towards the goal position
-                v_ = {cos(toward_angle) * combat_stats_.speed, sin(toward_angle) * combat_stats_.speed};
+                v_ = {cos(toward_angle_) * combat_stats_.speed, sin(toward_angle_) * combat_stats_.speed};
                 dv = v_ * time_delta;
                 if (math_utils::IsBetween(p_, p_ + dv, goal_p_)) {
                     p_ = goal_p_;
@@ -134,7 +133,7 @@ namespace backend {
                 CalculatePositionOffset(position_offsets_, member_singles_.size(), rng_);
 
                 // Move towards the goal position
-                v_ = {cos(toward_angle) * combat_stats_.speed_in_combat, sin(toward_angle) * combat_stats_.speed_in_combat};
+                v_ = {cos(toward_angle_) * combat_stats_.speed_in_combat, sin(toward_angle_) * combat_stats_.speed_in_combat};
                 dv = v_ * time_delta;
                 if (math_utils::IsBetween(p_, p_ + dv, goal_p_)) {
                     p_ = goal_p_;

@@ -16,6 +16,6 @@ namespace backend {
             int cols_;
 
             // Single formation, represented by 2d array with pointers
-            Single** formation_;   
-    }
+            Single*** formation_;
+    };
 }

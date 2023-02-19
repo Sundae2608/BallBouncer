@@ -23,9 +23,9 @@ namespace backend {
         // Create new data;
         rows_ = new_rows;
         cols_ = new_cols;
-        formation_ = new Single*[rows_];
+        formation_ = new Single**[rows_];
         for (int i = 0; i < rows_; i++) {
-            formation_[i] = new Single[cols_];
+            formation_[i] = new Single*[cols_];
         }
     }
 

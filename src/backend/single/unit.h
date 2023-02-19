@@ -51,6 +51,7 @@ namespace backend {
             UnitState unit_state_;
             Vector2 p_;
             Vector2 v_;
+            double toward_angle_;
             Unit* engaging_unit_;
 
             // Goal variables

@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "../point.h"
+#include "../single/single.h"
 #include "math_utils.h"
 
 namespace backend {
@@ -118,6 +119,16 @@ namespace backend {
             // Store the results into the memo for future lookup, and return the results
             kSunflowerFormationMemo[lookup_key] = return_vec;
             return return_vec;
+        }
+
+        std::vector<Single*> SortSinglesByAngle(std::vector<Single*> singles, double angle) {
+            auto CompareFunction = [angle](Single* s1, Single* s2) {
+                double x1 = s1->GetPosition().x * cos(angle) - s1->GetPosition().y * sin(angle);
+                double x2 = s2->GetPosition().x * cos(angle) - s1->GetPosition().y * sin(angle);
+                return x1 < x2;
+            };
+            std::sort(singles.begin(), singles.end(), CompareFunction);
+            return singles;
         }
     }
 }
