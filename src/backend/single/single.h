@@ -9,9 +9,10 @@
 
 namespace backend {
     class Unit;
+    class Game;
     class Single {
         public:
-            Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng);
+            Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng, Game& game);
 
             // Update the intention of the single
             void UpdateIntention(double time_delta);
@@ -27,6 +28,9 @@ namespace backend {
 
             // Gain mass
             void GainMass(double added_mass);
+
+            // Get hit
+            void GetHit(double angle, double damage);
             
             // Getters
             Vector2 GetPosition() const;
@@ -34,6 +38,7 @@ namespace backend {
             double GetRadius() const;
             double GetMass() const;
             double GetSpeed() const;
+            double GetHitDelay() const;
             uint32_t GetId() const;
             uint32_t GetFactionId() const;
 
@@ -59,6 +64,8 @@ namespace backend {
             // Current state
             SingleState single_state_;
             double decision_delay_;
+            double reloading_delay_;
+            double hit_delay_;
 
             // Size
             double radius_;
@@ -78,5 +85,8 @@ namespace backend {
 
             // RNG for decision making
             RNG& rng_;
+
+            // Game object that the single operates in.
+            Game& game_;
     };
 }

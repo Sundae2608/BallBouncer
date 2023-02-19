@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace backend {
     struct Vector2 {
         double x;
@@ -35,6 +37,10 @@ namespace backend {
 
         double SquareMagnitude() {
             return x*x + y*y;
+        }
+
+        double GetAngle() {
+            return atan2(y, x);
         }
     };
 }

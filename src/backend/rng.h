@@ -7,7 +7,11 @@ namespace backend {
         public:
             RNG(unsigned int seed);
 
+            // Generate a uniform random double [lb, ub)
             double RandDouble(double lb, double ub);
+
+            // Generate a uniform random integer [lb, ub)
+            int RandInt(int lb, int ub);
 
         private:
             std::default_random_engine rng_; 

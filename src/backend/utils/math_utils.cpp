@@ -130,5 +130,12 @@ namespace backend {
             std::sort(singles.begin(), singles.end(), CompareFunction);
             return singles;
         }
+
+        Vector2 GetCartesianVector(double r, double theta) {
+            return {
+                r * cos(theta),
+                r * sin(theta)
+            };
+        }
     }
 }

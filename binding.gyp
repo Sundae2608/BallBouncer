@@ -18,6 +18,7 @@
         "./src/game_wrapper.cpp",
         "./src/backend/boids_manager.cpp",
         "./src/backend/collision_manager.cpp",
+        "./src/backend/hitscan_manager.cpp",
         "./src/backend/position_hasher.cpp",
         "./src/backend/game.cpp",
         "./src/backend/player.cpp",

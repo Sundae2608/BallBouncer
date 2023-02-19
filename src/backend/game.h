@@ -9,6 +9,7 @@
 
 #include "boids_manager.h"
 #include "collision_manager.h"
+#include "hitscan_manager.h"
 #include "position_hasher.h"
 #include "configs.h"
 #include "player.h"
@@ -26,7 +27,11 @@ namespace backend {
             void AddNewPlayer(std::string player_id);
 
             // Remove the player from the environment
+            // Update Remove player to be better
             void RemovePlayer(std::string player_id);
+
+            // Add a hit scan object into the environment
+            void AddHitScanObject(HitscanObject bullet);
 
             // Update loop
             void Update(double time_delta);
@@ -69,6 +74,9 @@ namespace backend {
 
             // Collision manager
             CollisionManager collision_manager_;
+
+            // Hitscan manager
+            HitscanManager hitscan_manager_;
 
             // Map containing all the players
             std::unordered_map<std::string, std::unique_ptr<Player>> player_map_;

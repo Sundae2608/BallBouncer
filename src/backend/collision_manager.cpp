@@ -2,10 +2,6 @@
 #include "position_hasher.h"
 
 namespace backend {
-    namespace {
-        constexpr double kSpringPush = 1;
-    }
-    
     CollisionManager::CollisionManager(const PositionHasher& position_hasher) : position_hasher_(position_hasher) {};
 
     void CollisionManager::ProcessCollision(double time_delta) {
@@ -29,7 +25,7 @@ namespace backend {
                     Vector2 target;
                     target.x = single->GetPosition().x + cos(angle) * min_dist;
                     target.y = single->GetPosition().y + sin(angle) * min_dist;
-                    Vector2 a = (target - nearby_single->GetPosition()) * kSpringPush * nearby_single->GetMass() / single->GetMass();
+                    Vector2 a = (target - nearby_single->GetPosition()) * g_physics_stats.spring_push * nearby_single->GetMass() / single->GetMass();
                     a_total = a_total - a;
                 }
             }

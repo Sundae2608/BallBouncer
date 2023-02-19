@@ -7,15 +7,18 @@
 #include "unit.h"
 #include "../utils/math_utils.h"
 #include "../utils/move_utils.h"
+#include "../game.h"
+#include "../hitscan_manager.h"
 #include "../point.h"
 #include "../variables.h"
 
 namespace backend {
-    Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng) : 
+    Single::Single(uint32_t id, uint32_t faction_id, Vector2 position, double mass, double radius, const CombatStats& combat_stats, RNG& rng, Game& game) : 
         id_(id), faction_id_(faction_id), p_(position), single_state_(SingleState::SINGLE_STANDING), 
-        combat_stats_(combat_stats), mass_(mass), radius_(radius), rng_(rng) {
+        combat_stats_(combat_stats), mass_(mass), radius_(radius), rng_(rng), game_(game) {
         governing_unit_ = nullptr;
         decision_delay_ = 0;
+        reloading_delay_ = 0;
         goal_p_ = p_;
         angle_ = 0;
     }
@@ -67,7 +70,6 @@ namespace backend {
             case SingleState::SINGLE_DEAD:
                 break;
         }
-
         // Calculate the intended velocity
         v_ = {cos(angle_) * speed_, sin(angle_) * speed_};
     }
@@ -88,8 +90,32 @@ namespace backend {
         
         // Decrement decision delay
         decision_delay_ -= time_delta;
-        if (decision_delay_ > 0) {
+        if (decision_delay_ <= 0) {
             decision_delay_ = 0;
+        }
+
+        // If the unit is engaging and finished reloading, then perform the shooting
+        reloading_delay_ -= time_delta;
+        if (decision_delay_ <= 0) {
+            reloading_delay_ = 0;
+        }
+        if (governing_unit_->GetState() == UnitState::UNIT_ENGAGING && reloading_delay_ <= 0) {
+            // Pick a random single and shoot a hitscan object into one of the enemy.
+            // When the death mechanism returns, make sure we only shoot at singles that are alive
+            HitscanObject bullet;
+            Unit* enemy_unit = governing_unit_->GetEngagingUnit();
+
+            if (enemy_unit = nullptr) {
+                Single* targeting_single = enemy_unit->GetMemberSingles().at(rng_.RandInt(0, enemy_unit->GetMemberSingles().size()));
+
+                bullet.p_source = p_;
+                bullet.angle = (targeting_single->GetPosition() - p_).GetAngle();
+                bullet.faction_id = faction_id_;
+                game_.AddHitScanObject(bullet);
+                
+                // Once the bullet is shot, reload the bullet
+                reloading_delay_ = g_game_vars.single_reload_delay;
+            }
         }
     }
 
@@ -120,6 +146,10 @@ namespace backend {
         mass_ = new_mass;
     }
 
+    void Single::GetHit(double angle, double damage) {
+        hit_delay_ = g_game_vars.single_hit_delay;
+    }
+
     Vector2 Single::GetPosition() const {
         return p_;
     }
@@ -138,6 +168,10 @@ namespace backend {
 
     double Single::GetSpeed() const {
         return speed_;
+    }
+
+    double Single::GetHitDelay() const {
+        return hit_delay_;
     }
 
     void Single::SetVelocity(Vector2 v) {

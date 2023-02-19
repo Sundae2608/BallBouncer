@@ -46,6 +46,10 @@ namespace backend {
         }
     }
 
+    Unit* Unit::GetEngagingUnit() {
+        return engaging_unit_;
+    }
+
     void Unit::Disengage() {
         engaging_unit_ = nullptr;
         SwitchUnitState(UnitState::UNIT_STANDING);

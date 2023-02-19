@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 
 #include "../point.h"
@@ -28,6 +29,9 @@ namespace backend {
             // Attack the unit
             void AttackUnit(Unit* unit);
             void Disengage();
+
+            // Get engaging unit
+            Unit* GetEngagingUnit();
 
             // Whether unit is engaging
             UnitState GetState();

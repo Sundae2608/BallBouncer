@@ -28,5 +28,11 @@ namespace backend {
 
         // Sort singles by angle
         std::vector<Single*> SortSinglesByAngle(std::vector<Single*> singles, double angle);
+
+        // Check whether the line segment from p1 and p2 intersects the circle defined by center and radius.
+        bool LineCircleIntersection(Vector2 p1, Vector2 p2, Vector2 center, double radius);
+
+        // Convert radial co-ordinate to x-y coordinate
+        Vector2 GetCartesianVector(double r, double theta);
     }
 }

@@ -9,9 +9,10 @@
 #include "single/unit.h"
 
 namespace backend {
+    class Game;
     class Player {
         public:
-            Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, CombatStats& combat_stats, RNG& rng);
+            Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, CombatStats& combat_stats, RNG& rng, Game& game);
 
             // Update the state of the player
             void UpdateState(double time_delta);

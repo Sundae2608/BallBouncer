@@ -30,8 +30,11 @@ namespace backend {
             const std::vector<Single*> GetAllSingles() const;
 
             // Get nearby singles given a radius 
-            const std::vector<Single*> GetNearbySingles(const Vector2 point, double radius) const;
-            const std::vector<Single*> GetNearbySingles(const Vector2 point) const;
+            const std::vector<Single*> GetNearbySingles(Vector2 point, double radius) const;
+            const std::vector<Single*> GetNearbySingles(Vector2 point) const;
+
+            // Get singles in a line
+            const std::vector<Single*> GetSinglesByLine(Vector2 start, Vector2 end) const;
         private:
             double x_div_;
             double y_div_;

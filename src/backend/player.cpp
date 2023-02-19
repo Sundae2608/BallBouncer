@@ -1,3 +1,4 @@
+#include "game.h"
 #include "player.h"
 #include "variables.h"
 #include "single/single.h"
@@ -12,9 +13,9 @@
 
 namespace backend {
 
-    Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, CombatStats& combat_stats, RNG& rng) :
+    Player::Player(uint32_t single_id, uint32_t faction_id, Vector2 position, double mass, double radius, CombatStats& combat_stats, RNG& rng, Game& game) :
         faction_id_(faction_id), rng_(rng) {
-        main_single_ = std::make_unique<Single>(single_id, faction_id, position, mass, radius, combat_stats, rng);
+        main_single_ = std::make_unique<Single>(single_id, faction_id, position, mass, radius, combat_stats, rng, game);
         unit_ = std::make_unique<Unit>(position, *this, combat_stats, rng);
     }
 

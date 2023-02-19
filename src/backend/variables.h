@@ -25,6 +25,8 @@ namespace backend {
         double single_distance_within_player = 1.5;
         double single_pos_randomization = 0.03;
         double single_decision_delay = 0.2;
+        double single_hit_delay = 0.2;
+        double single_reload_delay = 0.5;
         double single_decision_delay_variation = 0.15;
         double single_standing_dist = 0.1;
         double single_out_of_reach_coef = 5;
@@ -34,9 +36,23 @@ namespace backend {
         double unit_standing_dist = 0.1;
     };
 
-    static GameVariables g_game_vars;
+    struct PhysicsStats {
+        // Spring push
+        double spring_push = 1;
+    };
 
+    struct HitscanStats {
+        // Bullet range
+        double min_range = 0;
+        double max_range = 200;
+        double bullet_push = 8;
+        double bullet_damage = 20;
+    };
+
+    static GameVariables g_game_vars;
     static CombatStats g_combat_stats;
+    static PhysicsStats g_physics_stats;
+    static HitscanStats g_hitscan_stats;
     
     static void ModifyVariable(std::string variable, double value) {
         if (variable == "player_radius") {
