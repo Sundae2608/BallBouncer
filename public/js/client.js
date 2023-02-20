@@ -19,6 +19,7 @@ const randomColor = (() => {
     };
   })();
 
+const colorRed = `hsl(0,100%,50%)`;
 
 // Object set up
 let selfID;
@@ -56,6 +57,7 @@ function processPlayerData(playerData, playerObjects, playersFound, playerColorM
     }
 }
 
+var justShoot = false;
 function processSingleData(singlesData, singleObjects, singlesFound, playerColorMap, playerId, scene) {
     let color;
     if (playerId == null) {
@@ -65,9 +67,14 @@ function processSingleData(singlesData, singleObjects, singlesFound, playerColor
     }
     let singlePositions = singlesData.singlePositions;
     let singleIds = new Int32Array(singlesData.singleIds);
+    let singleHitDelays = new Float64Array(singlesData.singleHitDelays);
+    let singleJustShoots = new Int8Array(singlesData.singleJustShoots);
     for (let i = 0; i < singleIds.length; i++) {
         let singleId = singleIds[i];
         let singlePosition = new Float64Array(singlePositions[i]);
+        let singleHitDelay = singleHitDelays[i];
+        let modifiedColor = singleHitDelay > 0 ? colorRed : color;
+        let singleJustShoot = singleJustShoots[i];
         singlesFound[singleId] = true;
 
         if (!(singleId in singleObjects)) {
@@ -84,7 +91,15 @@ function processSingleData(singlesData, singleObjects, singlesFound, playerColor
         singleObject.position.x = singlePosition[0];
         singleObject.position.y = singlePosition[1];
         singleObject.position.z = 1.58 / 2;
-        singleObject.material.color.set(color);
+        singleObject.material.color.set(modifiedColor);
+
+        if (singleJustShoot && !justShoot) {
+            justShoot = true;
+            if (!gunShots[currSoundPlayer].isPlaying) {
+                gunShots[currSoundPlayer].play();
+                currSoundPlayer = (currSoundPlayer + 1) % NUM_GUN_SHOTS_MAX;
+            }
+        }
     }
 }
 
@@ -150,17 +165,28 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 const leftClickSound = new THREE.Audio(listener);
 const rightClickSound = new THREE.Audio(listener);
+NUM_GUN_SHOTS_MAX = 10;
+const gunShots = [];
+for (let i = 0; i < NUM_GUN_SHOTS_MAX; i++) {
+    gunShots.push(new THREE.Audio(listener));
+}
 
 // Load a sound and set it to buffer
 const audioLoader = new THREE.AudioLoader();
 audioLoader.load('audio/click1.mp3', function(buffer) {
     rightClickSound.setBuffer(buffer);
     rightClickSound.setVolume(0.25);
-})
+});
 audioLoader.load('audio/click2.mp3', function(buffer) {
     leftClickSound.setBuffer(buffer);
     leftClickSound.setVolume(0.25);
-})
+});
+audioLoader.load('audio/matchlock_single.mp3', function(buffer) {
+for (let i = 0; i < NUM_GUN_SHOTS_MAX; i++) {
+    gunShots[i].setBuffer(buffer);
+    gunShots[i].setBuffer(0.25);
+});
+var currSoundPlayer = 0;
 
 // Light setup
 // scene.background = new THREE.Color( 0xf0f0f0 );		
@@ -256,6 +282,7 @@ socket.on('updateData', data => {
     // Loop through all player objects
     let playersFound = {};
     let playerData = data.playerData;
+    justShoot = false;
     processPlayerData(playerData, playerObjects, playersFound, playerColorMap, scene);
     for (let playerId in playerObjects){
         if (!playersFound[playerId]) {

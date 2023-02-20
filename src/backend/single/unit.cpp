@@ -42,7 +42,7 @@ namespace backend {
     void Unit::AttackUnit(Unit* unit) {
         engaging_unit_ = unit;
         if (engaging_unit_ != nullptr) {
-            SwitchUnitState(UnitState::UNIT_ENGAGING);
+            SwitchUnitState(UnitState::UNIT_MOVING_TO_ENGAGE);
         }
     }
 

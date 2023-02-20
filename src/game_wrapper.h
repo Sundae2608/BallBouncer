@@ -35,6 +35,16 @@ class GameWrapper : public Napi::ObjectWrap<GameWrapper> {
         Napi::Value GetSinglePositionsByPlayer(const Napi::CallbackInfo& info);
         Napi::Value GetSinglePositionsNeutral(const Napi::CallbackInfo& info);
         
+        // Get all hit delay
+        Napi::Value GetHitDelaysAll(const Napi::CallbackInfo& info);
+        Napi::Value GetHitDelaysByPlayer(const Napi::CallbackInfo& info);
+        Napi::Value GetHitDelaysNeutral(const Napi::CallbackInfo& info);
+        
+        // Get all hit delay
+        Napi::Value GetJustShootsAll(const Napi::CallbackInfo& info);
+        Napi::Value GetJustShootsByPlayer(const Napi::CallbackInfo& info);
+        Napi::Value GetJustShootsNeutral(const Napi::CallbackInfo& info);
+        
         // Get all Id
         Napi::Value GetSingleIdsAll(const Napi::CallbackInfo& info);
         Napi::Value GetSingleIdsByPlayer(const Napi::CallbackInfo& info);

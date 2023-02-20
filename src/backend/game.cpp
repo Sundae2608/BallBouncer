@@ -63,6 +63,7 @@ namespace backend {
 
         // Manage the collision
         // collision_manager_.ProcessCollision(time_delta);
+        hitscan_manager_.ProcessCollision();
 
         // Update the state of each player
         for (auto it = player_map_.begin(); it != player_map_.end(); it++) {

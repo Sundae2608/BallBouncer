@@ -19,6 +19,8 @@ namespace backend {
         governing_unit_ = nullptr;
         decision_delay_ = 0;
         reloading_delay_ = 0;
+        hit_delay_ = 0;
+        just_shoot_ = false;
         goal_p_ = p_;
         angle_ = 0;
     }
@@ -93,19 +95,23 @@ namespace backend {
         if (decision_delay_ <= 0) {
             decision_delay_ = 0;
         }
+        hit_delay_ -= time_delta;
+        if (hit_delay_ <= 0) {
+            hit_delay_ = 0;
+        }
 
         // If the unit is engaging and finished reloading, then perform the shooting
         reloading_delay_ -= time_delta;
-        if (decision_delay_ <= 0) {
+        if (reloading_delay_ <= 0) {
             reloading_delay_ = 0;
         }
-        if (governing_unit_->GetState() == UnitState::UNIT_ENGAGING && reloading_delay_ <= 0) {
+        if (governing_unit_ != nullptr && governing_unit_->GetState() == UnitState::UNIT_ENGAGING && reloading_delay_ == 0) {
             // Pick a random single and shoot a hitscan object into one of the enemy.
             // When the death mechanism returns, make sure we only shoot at singles that are alive
             HitscanObject bullet;
             Unit* enemy_unit = governing_unit_->GetEngagingUnit();
 
-            if (enemy_unit = nullptr) {
+            if (enemy_unit != nullptr) {
                 Single* targeting_single = enemy_unit->GetMemberSingles().at(rng_.RandInt(0, enemy_unit->GetMemberSingles().size()));
 
                 bullet.p_source = p_;
@@ -114,8 +120,11 @@ namespace backend {
                 game_.AddHitScanObject(bullet);
                 
                 // Once the bullet is shot, reload the bullet
-                reloading_delay_ = g_game_vars.single_reload_delay;
+                reloading_delay_ = g_game_vars.single_reload_delay + rng_.RandDouble(-g_game_vars.single_reload_delay_variation, g_game_vars.single_reload_delay_variation);
+                just_shoot_ = true;
             }
+        } else {
+            just_shoot_ = false;
         }
     }
 
@@ -148,6 +157,10 @@ namespace backend {
 
     void Single::GetHit(double angle, double damage) {
         hit_delay_ = g_game_vars.single_hit_delay;
+    }
+
+    bool Single::JustShoot() const {
+        return just_shoot_;
     }
 
     Vector2 Single::GetPosition() const {

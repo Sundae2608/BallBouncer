@@ -114,6 +114,8 @@ function serverLoop() {
       radius: gameInstance.GetPlayerMass(playerId),
       singlePositions: gameInstance.GetSinglePositionsByPlayer(playerId),
       singleIds: gameInstance.GetSingleIdsByPlayer(playerId),
+      singleHitDelays: gameInstance.GetHitDelaysByPlayer(playerId),
+      singleJustShoots: gameInstance.GetJustShootsByPlayer(playerId),
     };
   }
 

@@ -36,6 +36,28 @@ namespace {
         }
         return ids_array;
     }
+
+    Napi::Float64Array CreateHitDelaysFromSingles(std::vector<backend::Single*> singles, const Napi::CallbackInfo& info) {
+        Napi::Float64Array hit_delays_array = Napi::Float64Array::New(info.Env(), singles.size());
+        for (int i = 0; i < singles.size(); i++) {
+            backend::Single* single = singles[i];
+            
+            // Assign individual ID to return array
+            hit_delays_array[i] = single->GetHitDelay();
+        }
+        return hit_delays_array;
+    }
+
+    Napi::Int8Array CreateJustShootsFromSingles(std::vector<backend::Single*> singles, const Napi::CallbackInfo& info) {
+        Napi::Int8Array just_shoots_array = Napi::Int8Array::New(info.Env(), singles.size());
+        for (int i = 0; i < singles.size(); i++) {
+            backend::Single* single = singles[i];
+            
+            // Assign individual ID to return array
+            just_shoots_array[i] = single->JustShoot() ? 1 : 0;
+        }
+        return just_shoots_array;
+    }
 }
 
 Napi::FunctionReference GameWrapper::constructor;
@@ -64,6 +86,14 @@ Napi::Object GameWrapper::Init(Napi::Env env, Napi::Object exports) {
     InstanceMethod("GetSingleIdsAll", &GameWrapper::GetSingleIdsAll),
     InstanceMethod("GetSingleIdsByPlayer", &GameWrapper::GetSingleIdsByPlayer),
     InstanceMethod("GetSingleIdsNeutral", &GameWrapper::GetSingleIdsByPlayer),
+
+    InstanceMethod("GetHitDelaysAll", &GameWrapper::GetHitDelaysAll),
+    InstanceMethod("GetHitDelaysByPlayer", &GameWrapper::GetHitDelaysByPlayer),
+    InstanceMethod("GetHitDelaysNeutral", &GameWrapper::GetHitDelaysNeutral),
+
+    InstanceMethod("GetJustShootsAll", &GameWrapper::GetJustShootsAll),
+    InstanceMethod("GetJustShootsByPlayer", &GameWrapper::GetJustShootsByPlayer),
+    InstanceMethod("GetJustShootsNeutral", &GameWrapper::GetJustShootsNeutral),
 
     // Update tuning variables
     InstanceMethod("NodifyVariable", &GameWrapper::ModifyVariable),
@@ -273,6 +303,75 @@ Napi::Value GameWrapper::GetSingleIdsNeutral(const Napi::CallbackInfo& info) {
     std::vector<backend::Single*> singles = game_instance_->GetNeutralSingles();
     return CreateIdFromSingles(singles, info);
 }
+
+Napi::Value GameWrapper::GetHitDelaysAll(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Function argument GetHitDelaysAll() should not have any argument").ThrowAsJavaScriptException();
+    }
+    std::vector<backend::Single*> singles = game_instance_->GetAllSingles();
+    return CreateHitDelaysFromSingles(singles, info);
+}
+
+Napi::Value GameWrapper::GetHitDelaysByPlayer(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 1 || info[1].IsString()) {
+        Napi::TypeError::New(env, "Function argument GetHitDelaysByPlayer(string player_id) expected").ThrowAsJavaScriptException();
+    }
+    auto player_id = info[0].As<Napi::String>();
+    auto singles_or = game_instance_->GetPlayerSingles(player_id);
+    if (!singles_or.has_value()) {
+        Napi::TypeError::New(env, "Player ID not found").ThrowAsJavaScriptException();
+    }
+    return CreateHitDelaysFromSingles(singles_or.value(), info);
+}
+
+Napi::Value GameWrapper::GetHitDelaysNeutral(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Function argument GetHitDelaysNeutral() should not have any argument").ThrowAsJavaScriptException();
+    }
+    std::vector<backend::Single*> singles = game_instance_->GetNeutralSingles();
+    return CreateHitDelaysFromSingles(singles, info);
+}
+
+Napi::Value GameWrapper::GetJustShootsAll(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Function argument GetJustShootsAll() should not have any argument").ThrowAsJavaScriptException();
+    }
+    std::vector<backend::Single*> singles = game_instance_->GetAllSingles();
+    return CreateJustShootsFromSingles(singles, info);
+}
+
+Napi::Value GameWrapper::GetJustShootsByPlayer(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 1 || info[1].IsString()) {
+        Napi::TypeError::New(env, "Function argument GetJustShootsByPlayer(string player_id) expected").ThrowAsJavaScriptException();
+    }
+    auto player_id = info[0].As<Napi::String>();
+    auto singles_or = game_instance_->GetPlayerSingles(player_id);
+    if (!singles_or.has_value()) {
+        Napi::TypeError::New(env, "Player ID not found").ThrowAsJavaScriptException();
+    }
+    return CreateJustShootsFromSingles(singles_or.value(), info);
+}
+
+Napi::Value GameWrapper::GetJustShootsNeutral(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Function argument GetJustShootsNeutral() should not have any argument").ThrowAsJavaScriptException();
+    }
+    std::vector<backend::Single*> singles = game_instance_->GetNeutralSingles();
+    return CreateJustShootsFromSingles(singles, info);
+}
+
 
 void GameWrapper::ModifyVariable(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();

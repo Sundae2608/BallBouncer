@@ -25,9 +25,10 @@ namespace backend {
         double single_distance_within_player = 1.5;
         double single_pos_randomization = 0.03;
         double single_decision_delay = 0.2;
+        double single_decision_delay_variation = 0.15;
         double single_hit_delay = 0.2;
         double single_reload_delay = 0.5;
-        double single_decision_delay_variation = 0.15;
+        double single_reload_delay_variation = 0.15;
         double single_standing_dist = 0.1;
         double single_out_of_reach_coef = 5;
         double single_out_of_reach_speed_mult = 1.4;

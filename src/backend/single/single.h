@@ -39,6 +39,7 @@ namespace backend {
             double GetMass() const;
             double GetSpeed() const;
             double GetHitDelay() const;
+            bool JustShoot() const;
             uint32_t GetId() const;
             uint32_t GetFactionId() const;
 
@@ -66,6 +67,7 @@ namespace backend {
             double decision_delay_;
             double reloading_delay_;
             double hit_delay_;
+            bool just_shoot_;
 
             // Size
             double radius_;
